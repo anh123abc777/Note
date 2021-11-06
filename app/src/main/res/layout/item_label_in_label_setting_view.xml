@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="label"
+            type="com.example.keep.database.Label" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_margin="4dp"
+        >
+        <ImageButton
+            android:id="@+id/start_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_outline_label_24"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/transparent"
+            />
+        <EditText
+            android:id="@+id/label_name_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif"
+            android:text="@{label.labelName}"
+            android:textSize="16dp"
+            android:textColor="#9C000000"
+            android:layout_toRightOf="@id/start_button"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            />
+
+        <ImageButton
+            android:id="@+id/end_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_edit_24"
+            android:background="@android:color/transparent"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            />
+
+    </RelativeLayout>
+
+</layout>

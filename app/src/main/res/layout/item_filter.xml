@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="item"
+            type="com.example.keep.adapter.DataFilterAdapter" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/frame_item_filter"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:layout_margin="4dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            setIcon="@{item.icon}"
+            android:layout_centerInParent="true"
+            app:tint="@color/white" />
+        <TextView
+            android:id="@+id/filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/icon"
+            android:layout_marginTop="8dp"
+            android:text="@{item.filter}"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            />
+
+
+    </RelativeLayout>
+</layout>

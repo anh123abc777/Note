@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data>
+        <variable
+            name="noteWithLabels"
+            type="com.example.keep.database.NoteWithLabels" />
+        <variable
+            name="clickListener"
+            type="com.example.keep.overview.NotesAdapter.OnClickListener" />
+
+    </data>
+
+
+        <LinearLayout
+            android:id="@+id/frame_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="4dp"
+            android:background="@drawable/border"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            app:elevation="0dp"
+            android:tag="isNotSelect"
+            >
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/images"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
+                tools:listitem="@layout/element_image"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                listDataImages="@{noteWithLabels.note.images}"
+                />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="18sp"
+                android:text="@{String.valueOf(noteWithLabels.note.position)}"
+                android:gravity="fill_horizontal"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                />
+<!--            android:text="@{noteWithLabels.title}"-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/checkbox_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/element_checkbox"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                listCheckboxes="@{noteWithLabels.note.checkboxes}"
+                />
+
+            <TextView
+                android:id="@+id/content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="@{noteWithLabels.note.content}"
+                visibilityContent="@{noteWithLabels.note.checkboxes}"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+
+            />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/labels"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+                tools:listitem="@layout/element_label_in_note_view"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                listLabels="@{noteWithLabels.labels}"
+                timeReminder="@{noteWithLabels.note.timeReminder}"
+                />
+
+        </LinearLayout>
+</layout>

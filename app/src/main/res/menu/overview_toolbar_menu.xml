@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/search_bar"
+        android:title="search"
+        android:icon="@drawable/ic_baseline_search_24"
+        app:showAsAction="always"
+        android:visible="false"
+        />
+
+    <item
+        android:id="@+id/optionView"
+        android:title="option view"
+        android:icon="@drawable/ic_outline_view_agenda_24"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/empty_trash"
+        android:title="Empty Trash"
+        android:visible="false"
+        />
+</menu>

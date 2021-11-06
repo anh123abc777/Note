@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/overviewFragment">
+
+    <fragment
+        android:id="@+id/overviewFragment"
+        android:name="com.example.keep.overview.OverviewFragment"
+        android:label="OverviewFragment" >
+        <action
+            android:id="@+id/action_overviewFragment_to_detailNoteFragment"
+            app:destination="@id/detailNoteFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_labelFragment"
+            app:destination="@id/labelFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_labelSettingFragment"
+            app:destination="@id/labelSettingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailNoteFragment"
+        android:name="com.example.keep.detail.DetailNoteFragment"
+        android:label="DetailNoteFragment" >
+        <argument
+            android:name="noteId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_detailNoteFragment_to_labelFragment"
+            app:destination="@id/labelFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/labelFragment"
+        android:name="com.example.keep.label.LabelFragment"
+        android:label="fragment_label"
+        tools:layout="@layout/fragment_label" >
+        <argument
+            android:name="noteIdsToLabel"
+            app:argType="integer[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.keep.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_detailNoteFragment"
+            app:destination="@id/detailNoteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/labelSettingFragment"
+        android:name="com.example.keep.labelsetting.LabelSettingFragment"
+        android:label="fragment_label_setting"
+        tools:layout="@layout/fragment_label_setting" />
+</navigation>

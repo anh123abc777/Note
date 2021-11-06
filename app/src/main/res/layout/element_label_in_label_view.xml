@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="label"
+            type="com.example.keep.adapter.DataLabelsAdapter" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        >
+        <ImageView
+            android:id="@+id/image_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_label_24"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            />
+        <TextView
+            android:id="@+id/label_name_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif"
+            android:text="@{label.label.labelName}"
+            android:textSize="16dp"
+            android:hint="..."
+            android:textColor="#9C000000"
+            android:layout_toRightOf="@id/image_label"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:labelFor="@id/element_label_checkbox"
+            />
+
+        <com.example.keep.TriStateMaterialCheckBox
+            android:id="@+id/element_label_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textSize="16dp"
+            android:textColor="#9C000000"
+            android:layout_alignParentEnd="true"
+            app:state="@{label.stateCheckbox}"
+            />
+    </RelativeLayout>
+</layout>

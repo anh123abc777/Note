@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.keep.overview.OverviewViewModel" />
+    </data>
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:openDrawer="start">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".overview.OverviewFragment"
+        >
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/contextualActionBar"
+            style="@style/Widget.AppCompat.Toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="top"
+            actionBarVisibility="@{viewModel.notesSelected}"
+            window="@{viewModel.activity.window}"
+            app:menu="@menu/contextual_action_bar"
+            app:navigationIcon="@drawable/ic_baseline_close_24"
+            app:subtitle="@{String.valueOf(viewModel.notesSelected.size())}"
+            android:background="@color/white"
+            android:paddingTop="16dp"
+            android:clipToOutline="true"
+            android:elevation="56dp"/>
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/border"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlways|snapMargins"
+                app:menu="@menu/overview_toolbar_menu"
+                app:navigationIcon="@drawable/ic_baseline_dehaze_24">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:backgroundTint="#ECECEC"
+                    android:elevation="32dp">
+
+
+                    <!--                        <ImageView-->
+                    <!--                            android:id="@+id/action_menu"-->
+                    <!--                            android:layout_width="32dp"-->
+                    <!--                            android:layout_height="32dp"-->
+                    <!--                            android:layout_alignParentStart="true"-->
+                    <!--                            android:layout_centerVertical="true"-->
+                    <!--                            android:layout_marginStart="24dp"-->
+                    <!--                            android:src="@drawable/ic_baseline_dehaze_24"-->
+                    <!--                            />-->
+
+                    <TextView
+                        android:id="@+id/hintSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:onClick="@{() -> viewModel.navigateToSearchView()}"
+                        android:text="Search your notes"
+                        android:textSize="18sp"
+                         />
+
+                    <!--                        <ImageView-->
+                    <!--                            android:id="@+id/optionView"-->
+                    <!--                            android:layout_width="32dp"-->
+                    <!--                            android:layout_height="32dp"-->
+                    <!--                            android:layout_alignParentEnd="true"-->
+                    <!--                            android:layout_centerVertical="true"-->
+                    <!--                            android:layout_marginEnd="24dp"-->
+                    <!--                            android:onClick="@{() -> viewModel.changeOptionView()}"-->
+                    <!--                            android:src="@drawable/ic_baseline_grid_view_24" />-->
+                </RelativeLayout>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+<!--        <androidx.core.widget.NestedScrollView-->
+<!--            android:id="@+id/nested_scroll_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+<!--            android:paddingBottom="56dp"-->
+<!--            android:paddingTop="16dp"-->
+<!--            >-->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="true"
+                app:elevation="0dp"
+                android:elevation="0dp"
+                android:padding="4dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:spanCount="2"
+                />
+
+
+<!--        </androidx.core.widget.NestedScrollView>-->
+                    listData="@{viewModel.normalNotes}"
+<!--            </FrameLayout>-->
+
+<!--        android:clipToPadding="false"-->
+
+        <!--        </androidx.core.widget.NestedScrollView>-->
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottom_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="bottom"
+            app:backgroundTint="#D7FFFFFF"
+            app:fabAlignmentMode="end"
+            app:layout_anchorGravity="right"
+            app:menu="@menu/bottom_app_bar"
+            android:layout_marginTop="56dp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floating"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_add_24"
+            app:layout_anchor="@id/bottom_app_bar"
+            />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_bar_item_icon_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            android:visibility="gone"
+            app:menu="@menu/menu_drawer"
+            >
+
+            <!--            <androidx.core.widget.NestedScrollView-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                >-->
+            <!--                <LinearLayout-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="match_parent"-->
+            <!--                    android:orientation="vertical">-->
+
+            <!--                    <androidx.recyclerview.widget.RecyclerView-->
+            <!--                        android:id="@+id/rv_nav_drawer"-->
+            <!--                        android:layout_width="match_parent"-->
+            <!--                        android:layout_height="match_parent"-->
+            <!--                        android:background="@color/white"-->
+            <!--                        android:nestedScrollingEnabled="false"-->
+            <!--                        tools:targetApi="lollipop"-->
+            <!--                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
+            <!--                        android:orientation="vertical"-->
+            <!--                        tools:listitem="@layout/drawer_menu_item"-->
+            <!--                        />-->
+
+            <!--                </LinearLayout>-->
+
+            <!--            </androidx.core.widget.NestedScrollView>-->
+
+        </com.google.android.material.navigation.NavigationView>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+</layout>

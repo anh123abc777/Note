@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="dataCheckbox"
+            type="com.example.keep.database.DataCheckboxes" />
+    </data>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/element_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:checked="@{dataCheckbox.checked}"
+            />
+        <EditText
+            android:id="@+id/text_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif"
+            android:text="@{dataCheckbox.text}"
+            android:textSize="16dp"
+            android:hint="..."
+            android:textColor="#9C000000"
+            android:layout_toRightOf="@id/element_checkbox"
+            android:layout_marginStart="8dp"
+            android:layout_centerVertical="true"
+
+            />
+
+        <ImageButton
+            android:id="@+id/delete_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_close_24"
+            app:tint="@color/grayColor"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+</layout>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="184dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_behavior="com.google.android.material.BottomSheet">
+
+        <LinearLayout
+            android:id="@+id/delete"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_delete_outline_24"
+                app:tint="@color/grayColor" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="Delete"
+                android:textColor="@color/grayColor"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/make_a_copy"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_round_content_copy_24"
+                app:tint="@color/grayColor" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="Make a copy"
+                android:textColor="@color/grayColor"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <!--        <LinearLayout-->
+        <!--            android:id="@+id/recording"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="55dp"-->
+        <!--            android:orientation="horizontal"-->
+        <!--            android:clickable="true"-->
+        <!--            android:focusable="true"-->
+        <!--            android:padding="16dp"-->
+        <!--            android:layout_gravity="center_vertical"-->
+        <!--            android:background="?attr/selectableItemBackground">-->
+
+        <!--            <ImageView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:src="@drawable/ic_baseline_mic_none_24"-->
+        <!--                app:tint="@color/grayColor" />-->
+
+        <!--            <TextView-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:textSize="16sp"-->
+        <!--                android:text="Recording"-->
+        <!--                android:textColor="@color/grayColor"-->
+        <!--                android:layout_marginLeft="16dp"-->
+        <!--                android:layout_marginStart="16dp" />-->
+
+        <!--        </LinearLayout>-->
+
+        <LinearLayout
+            android:id="@+id/labels"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_outline_label_24"
+                app:tint="@color/grayColor" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="Labels"
+                android:textColor="@color/grayColor"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

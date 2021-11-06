@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/notification"
+        android:icon="@drawable/ic_outline_notifications_24"
+        android:title="notification"
+        android:contentDescription="notification"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/pin"
+        android:icon="@drawable/ic_pin"
+        android:title="pin"
+        android:contentDescription="pin"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/label"
+        android:icon="@drawable/ic_baseline_label_24"
+        android:title="Label"
+        android:contentDescription="label"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/delete"
+        android:title="Delete"
+        />
+    <item
+        android:id="@+id/storage"
+        android:title="Storage"
+        />
+
+    <item
+        android:id="@+id/copy"
+        android:title="Make a copy"
+        />
+
+    <item
+        android:id="@+id/unarchive"
+        android:title="Unarchive"
+        android:visible="false"
+        />
+
+    <item
+        android:id="@+id/delete_forever"
+        android:title="Delete forever"
+        android:visible="false"
+        />
+    
+
+    <item
+        android:id="@+id/restore"
+        android:title="Restore"
+        android:icon="@drawable/ic_baseline_restore_24"
+        app:showAsAction="always"
+        android:visible="false"
+        />
+
+
+</menu>
