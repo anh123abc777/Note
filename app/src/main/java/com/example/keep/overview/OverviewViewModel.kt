@@ -13,6 +13,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.liveData
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.keep.R
 import com.example.keep.adapter.DataFilterAdapter
@@ -78,23 +83,24 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
 //    private var callbackPriority : CustomItemTouchHelper
 //    var itemTouchHelperPriority : ItemTouchHelper
 
+    var emptyNoteDiscarded = MutableLiveData<Boolean>()
+
     init {
         createNotificationChannel()
         _currentNotesInView.value = NORMAL
         _notesSelected.value = mutableListOf()
-        _optionView.value = OptionView.GRIDVIEW
+//        _optionView.value = OptionView.GRIDVIEW
             callback = CustomItemTouchHelper(normalNotes,_notesSelected,repository)
             itemTouchHelper = ItemTouchHelper(callback)
-
     }
 
     fun changeOptionView(){
         _optionView.value = if(_optionView.value == OptionView.GRIDVIEW)
-                        OptionView.LISTVIEW
-                    else OptionView.GRIDVIEW
+                     OptionView.GRIDVIEW
+                    else OptionView.LISTVIEW
     }
 
-    fun onClick(note: NoteWithLabels?, isSelected: Boolean){
+    fun onClick(note: NoteWithLabels, isSelected: Boolean){
 
         when {
             isSelected || _notesSelected.value!!.size > 0 -> {
@@ -108,13 +114,9 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
 
             }
 
-            else ->
-                if (note != null) {
-                    _noteNavigate.value = note.note.noteId
-                }
-                else{
-                    _noteNavigate.value = Int.MIN_VALUE
-                }
+            else -> _noteNavigate.value = note.note.noteId
+
+
         }
 
     }
@@ -215,37 +217,33 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
     }
 
     fun addNote(image : String="",checkboxGroup: ArrayList<DataCheckboxes> = arrayListOf()) {
-//        runBlocking {
-//            withContext(Dispatchers.IO) {
-//                val position = repository.getLastPosition()+1
-//                if (image == "")
-//                    repository.insert(Note(checkboxes = checkboxGroup,position = position))
-//                else
-//                    repository.insert(
-//                        Note(
-//                            images = arrayListOf(image!!),
-//                            checkboxes = checkboxGroup,
-//                            position = position
-//                        )
-//                    )
-//            }
-//        }
-//
-//        val idNewNote = runBlocking {
-//            withContext(Dispatchers.IO){
-//                repository.getLastNote().noteId
-//            }
-//        }
-//        Timber.i("id new Note ${idNewNote}")
-//
-//        val newNoteWithLabels = runBlocking {
-//            withContext(Dispatchers.IO){
-//                repository.get(idNewNote)
-//            }
-//        }
-//        newNoteWithLabels
 
-        onClick(null,isSelected = false)
+        var newNote : NoteWithLabels =
+            when {
+                (image != "") -> {
+                    runBlocking {
+                        withContext(Dispatchers.IO) {
+                            repository.insert(
+                                Note(images = arrayListOf(image))
+                            )
+                        }
+                    }
+                    runBlocking {
+                        withContext(Dispatchers.IO){
+                            repository.get(repository.getLastNote().noteId)
+                        }
+                    }
+                }
+
+                checkboxGroup.isNotEmpty() ->
+                    NoteWithLabels(
+                        Note(-1), listOf()
+                    )
+
+                else -> NoteWithLabels(Note(-2), listOf())
+            }
+
+        onClick(newNote,isSelected = false)
 
         Timber.i("add noteWithLabels")
     }
@@ -395,14 +393,6 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
         _isSearching.value = true
     }
 
-    fun navigateToLabelSetting(){
-        _navigateToLabelSetting.value = true
-    }
-
-    fun doneNavigateToLabelSetting(){
-        _navigateToLabelSetting.value = false
-    }
-
     fun deleteReminder(note: Note){
 //        private fun deleteReminder(note: Note){
             val notificationManager = NotificationManagerCompat.from(application)
@@ -416,100 +406,6 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
         viewModeJob.cancel()
     }
 
-
-    @SuppressLint("SimpleDateFormat", "SetTextI18n")
-     fun showDateTimePicker(notes : List<Note>,layoutInflater: LayoutInflater) {
-        val dialogViewBinding = DateTimePickerBinding.inflate(layoutInflater)
-        val alertDialog = AlertDialog.Builder(activity).create()
-
-        dialogViewBinding.date.text = SimpleDateFormat("MMM dd").format(System.currentTimeMillis()).toString()
-        dialogViewBinding.time.text = SimpleDateFormat("HH:mm").format(System.currentTimeMillis()).toString()
-
-
-        val currentTime = Calendar.getInstance()
-        var mYear = currentTime[Calendar.YEAR] // current year
-
-        var mMonth = currentTime[Calendar.MONTH] // current month
-
-        var mDay = currentTime[Calendar.DAY_OF_MONTH] // current day
-
-        var hour = currentTime[Calendar.HOUR_OF_DAY]
-
-        var minute = currentTime[Calendar.MINUTE]
-
-        dialogViewBinding.time.setOnClickListener {
-
-            val timePicker = TimePickerDialog(application, { _, selectedHour, selectedMinute ->
-                dialogViewBinding.time.text = "$selectedHour:$selectedMinute"
-                hour=selectedHour
-                minute=selectedMinute
-            },
-                hour,
-                minute,
-                true
-            )
-            timePicker.setTitle("Select time")
-            timePicker.show()
-        }
-
-
-        dialogViewBinding.date.setOnClickListener {
-
-            val datePickerDialog = DatePickerDialog(application,
-                { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
-                    val dateString = "${monthOfYear+1}/$dayOfMonth/$year"
-                    val formatter = SimpleDateFormat("MM/dd/yyyy")
-                    val date = formatter.parse(dateString)
-                    val desiredFormat = SimpleDateFormat("MMM dd yyyy").format(date)
-
-                    dialogViewBinding.date.text = desiredFormat
-
-                    mYear=year
-                    mMonth=monthOfYear + 1
-                    mDay = dayOfMonth
-                }, mYear, mMonth, mDay
-            )
-            datePickerDialog.show()
-        }
-
-        alertDialog.setView(dialogViewBinding.root)
-        alertDialog.setTitle("Add reminder")
-        alertDialog.show()
-
-        var timeReminder = -1L
-        val timeReminderString = mMonth.toString() +" "+ mDay.toString() +" "+  mYear.toString()+" " +
-                hour.toString()+ ":" + minute.toString()
-        dialogViewBinding.saveAction.setOnClickListener {
-
-            val formatter = SimpleDateFormat("MM dd yyyy HH:mm")
-            val date = formatter.parse(timeReminderString)
-            timeReminder = date.time
-
-            notes.forEach {
-
-                sendNotification(it, timeReminder)
-            }
-            alertDialog.hide()
-            clearView()
-
-        }
-
-        dialogViewBinding.cancelAction.setOnClickListener {
-            alertDialog.hide()
-            clearView()
-
-        }
-
-        if(notes.size==1 && notes[0]!!.timeReminder!=0L) {
-            dialogViewBinding.deleteAction.visibility = View.VISIBLE
-            dialogViewBinding.deleteAction.setOnClickListener {
-                deleteReminder(notes[0])
-                alertDialog.hide()
-                clearView()
-            }
-        }
-
-    }
 
     fun clearView(){
         _needClearView.value = true
@@ -565,6 +461,7 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
     }
 
     enum class OptionView{GRIDVIEW,LISTVIEW}
+
 
 
 }

@@ -7,6 +7,7 @@ import com.example.keep.database.Label
 import com.example.keep.database.LabelRepository
 import com.example.keep.database.NoteDatabase
 import kotlinx.coroutines.*
+import timber.log.Timber
 
 class LabelSettingViewModel(application: Application): ViewModel() {
 
@@ -36,14 +37,26 @@ class LabelSettingViewModel(application: Application): ViewModel() {
         allLabels.value!!.add(Label(lastId,labelName))
     }
 
-    fun removeLabel(labelId: Int){
-        allLabels.value!!.removeIf { it.labelId==labelId }
+    fun removeLabel(index: Int){
+//        allLabels.value!!.removeIf { it.labelId==labelId }
+        coroutineScope.launch (Dispatchers.IO){
+            labelRepository.remove(allLabels.value!![index])
+        }
+        Timber.i("done remove ${index}")
+    }
+
+    fun updateLabel(label: Label){
+        val index = allLabels.value!!.indexOfFirst { it.labelId == label.labelId }
+        allLabels.value?.get(index)?.labelName = label.labelName
+        Timber.i("${allLabels.value?.find { it.labelId==label.labelId }?.labelName}")
     }
 
     fun saveData(){
         allLabels.value!!.forEach {
-            coroutineScope.launch(Dispatchers.IO){
-                labelRepository.insert(it)
+            runBlocking{
+                withContext(Dispatchers.IO) {
+                    labelRepository.insert(it)
+                }
             }
         }
     }

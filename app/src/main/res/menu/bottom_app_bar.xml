@@ -12,10 +12,10 @@
         android:title="image"
         app:showAsAction="ifRoom"
         />
-    <item
-        android:id="@+id/paint"
-        android:icon="@drawable/ic_baseline_brush_24"
-        android:title="paint"
-        app:showAsAction="ifRoom"
-        />
+<!--    <item-->
+<!--        android:id="@+id/paint"-->
+<!--        android:icon="@drawable/ic_baseline_brush_24"-->
+<!--        android:title="paint"-->
+<!--        app:showAsAction="ifRoom"-->
+<!--        />-->
 </menu>

@@ -11,7 +11,9 @@
         android:label="OverviewFragment" >
         <action
             android:id="@+id/action_overviewFragment_to_detailNoteFragment"
-            app:destination="@id/detailNoteFragment" />
+            app:destination="@id/detailNoteFragment"
+            app:enterAnim="@anim/zoom_in"
+            app:exitAnim="@anim/zoom_out" />
         <action
             android:id="@+id/action_overviewFragment_to_labelFragment"
             app:destination="@id/labelFragment" />

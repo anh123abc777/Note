@@ -85,11 +85,8 @@ class DetailNoteViewModel(val noteWithLabels: NoteWithLabels,val repository: Not
     fun addCheckboxes(){
 //        noteWithLabels.note.checkboxes!!.add("")
 
-        runBlocking {
-            withContext(Dispatchers.IO){
-                repository.update(noteWithLabels.note)
-            }
-        }
+        noteWithLabels.note.checkboxes.add(DataCheckboxes(noteWithLabels.note.checkboxes.size,"",))
+
         _stateCheckboxes.value = true
     }
 

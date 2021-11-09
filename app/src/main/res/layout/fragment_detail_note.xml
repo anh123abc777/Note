@@ -77,15 +77,15 @@
 
                     <ImageButton
                         android:id="@+id/add_check_box"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="80dp"
+                        android:layout_height="24dp"
                         android:gravity="center"
                         android:layout_gravity="center_horizontal"
                         android:src="@drawable/ic_baseline_add_24"
                         android:onClick="@{() -> viewModel.addCheckbox()}"
                         visibilityButtonAdd="@{viewModel.stateCheckBoxes}"
-
-                    />
+                        android:background="#FFC107"
+                        app:tint="@color/black" />
 
                     <EditText
                         android:id="@+id/content"

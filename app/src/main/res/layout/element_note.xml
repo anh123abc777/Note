@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textSize="18sp"
-                android:text="@{String.valueOf(noteWithLabels.note.position)}"
+                android:text="@{noteWithLabels.note.title}"
                 android:gravity="fill_horizontal"
                 android:layout_marginRight="8dp"
                 android:layout_marginLeft="8dp"

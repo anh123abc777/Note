@@ -10,6 +10,8 @@ import android.view.*
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagingDataAdapter
+import androidx.paging.PagingSource
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -57,7 +59,7 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
             binding.noteWithLabels = note
 
             setAdapterEachView(note)
-//            setMaxHeightEachView()
+            setMaxHeightEachView()
 
             val gesture = createGesture(clickListener,note)
 
@@ -204,14 +206,15 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
     }
 
 
-    override fun getItemId(position: Int): Long {
-        return getItem(position).id.toLong()
-    }
+//    override fun getItemId(position: Int): Long {
+//        return getItem(position).id.toLong()
+//    }
 
+//    DataItem.NoteItem
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is DataItem.Header -> ITEM_VIEW_TYPE_HEADER
-            is DataItem.NoteItem -> ITEM_VIEW_TYPE_ITEM
+            else -> ITEM_VIEW_TYPE_ITEM
         }
     }
 
@@ -420,5 +423,7 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
             }
         }
     }
+
+
 
 }

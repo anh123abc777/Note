@@ -13,6 +13,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
+import androidx.core.view.get
 import androidx.core.view.marginEnd
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -57,6 +58,7 @@ class OverviewFragment : Fragment(){
     ): View {
 
 
+
         binding = FragmentOverviewBinding.inflate(inflater)
 
         application = requireNotNull(this.activity).application
@@ -66,8 +68,6 @@ class OverviewFragment : Fragment(){
         viewModel = ViewModelProvider(requireActivity(),factory).get(OverviewViewModel::class.java)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
-
-
 
         binding.listItem.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -117,6 +117,14 @@ class OverviewFragment : Fragment(){
 
         observeClearView()
 
+        viewModel.emptyNoteDiscarded.observe(viewLifecycleOwner){
+            if(it){
+                Snackbar.make(binding.root, "Empty note discarded", Snackbar.LENGTH_SHORT)
+                .show()
+                viewModel.emptyNoteDiscarded.value = false
+            }
+        }
+
         return binding.root
     }
 
@@ -151,6 +159,7 @@ class OverviewFragment : Fragment(){
                     adapter.addHeaderAndSubmitList(it)
                 }
                 adapter.initNotes(it)
+
             }
         }
 
@@ -167,8 +176,8 @@ class OverviewFragment : Fragment(){
     /***** Toolbar *****/
     private fun setUpToolbar(){
         binding.toolbar.setNavigationOnClickListener {
-//            openDrawer()
-            viewModel.recyclerViewState = binding.listItem.layoutManager!!.onSaveInstanceState()!!
+            openDrawer()
+//            viewModel.recyclerViewState = binding.listItem.layoutManager!!.onSaveInstanceState()!!
 
         }
 
@@ -212,16 +221,16 @@ class OverviewFragment : Fragment(){
         viewModel.trashNotes.observe(viewLifecycleOwner){
             it?.let {
 
-                it.forEach { noteWithLabels ->
-                    if (noteWithLabels.note.timeEdited+7*24*60*60*1000>System.currentTimeMillis())
-                    {
-                        runBlocking {
-                            withContext(Dispatchers.IO){
-                                noteRepository.delete(noteWithLabels.note)
-                            }
-                        }
-                    }
-                }
+//                it.forEach { noteWithLabels ->
+//                    if (noteWithLabels.note.timeEdited+7*24*60*60*1000>System.currentTimeMillis())
+//                    {
+//                        runBlocking {
+//                            withContext(Dispatchers.IO){
+//                                noteRepository.delete(noteWithLabels.note)
+//                            }
+//                        }
+//                    }
+//                }
 
                 if (viewModel.currentNotesInView.value== TRASH) {
                     adapter.addHeaderAndSubmitList(it)
@@ -373,7 +382,6 @@ class OverviewFragment : Fragment(){
     private fun setUpMenuDrawer(){
 
         setStateItemTouchWhenFilterNavigationBar()
-        setFunctionAddLabelItemNavigationBar()
         setFunctionForLabelItemNavigationBar()
         setFunctionForMenuItemNavigationBar()
 
@@ -397,6 +405,8 @@ class OverviewFragment : Fragment(){
 
                 viewModel.clearView()
 
+                closeDrawer()
+
                 findNavController().navigate(
                     OverviewFragmentDirections.actionOverviewFragmentToLabelSettingFragment())
 
@@ -408,10 +418,15 @@ class OverviewFragment : Fragment(){
 
     private fun setFunctionForLabelItemNavigationBar(){
         val menu = binding.navigationBarItemIconView.menu
-        viewModel.labels.observe(viewLifecycleOwner) {
+        viewModel.labels.observeForever() {
             if(it!=null) {
+
+                menu.getItem(1).subMenu.clear()
+
+                setFunctionAddLabelItemNavigationBar()
+
                 viewModel.labels.value!!.forEach { labelWithNotes ->
-                    if (menu.findItem(labelWithNotes.label.labelId)==null) {
+
                         menu.getItem(1).subMenu.add(0, labelWithNotes.label.labelId, 1, labelWithNotes.label.labelName).also { item ->
                             item.setIcon(R.drawable.ic_outline_label_24)
                             item.setOnMenuItemClickListener {
@@ -431,7 +446,7 @@ class OverviewFragment : Fragment(){
                                 true
                             }
                         }
-                    }
+
                 }
                 adapter.initLabels(viewModel.labels)
             }
@@ -507,6 +522,9 @@ class OverviewFragment : Fragment(){
 
             autoSetIconForItemPin()
 
+            binding.contextualActionBar.menu.findItem(R.id.copy).isVisible = (it.size==1)
+
+
         }
     }
 
@@ -529,10 +547,10 @@ class OverviewFragment : Fragment(){
     /*******BottomAppBar********/
     private fun setItemClickBottomAppBar(){
         binding.floating.setOnClickListener {
-//            viewModel.addNote()
+            viewModel.addNote()
 //            binding.listItem.layoutManager!!.removeAllViews()
-            binding.listItem.layoutManager!!.onRestoreInstanceState(viewModel.recyclerViewState)
-            Toast.makeText(context,"${viewModel.recyclerViewState}",Toast.LENGTH_LONG).show()
+//            binding.listItem.layoutManager!!.onRestoreInstanceState(viewModel.recyclerViewState)
+//            Toast.makeText(context,"${viewModel.recyclerViewState}",Toast.LENGTH_LONG).show()
         }
 
         binding.bottomAppBar.setOnMenuItemClickListener(object : Toolbar.OnMenuItemClickListener,
@@ -704,7 +722,7 @@ class OverviewFragment : Fragment(){
 
                 R.id.delete -> {
                     deleteNote()
-                    Snackbar.make(binding.root, "Text label", Snackbar.LENGTH_LONG)
+                    Snackbar.make(binding.root, "Note moved to trash", Snackbar.LENGTH_LONG)
                         .setAction("Undo") {
                             viewModel.undoDeleteNotes()
                         }
@@ -816,13 +834,14 @@ class OverviewFragment : Fragment(){
 //        var array = IntArray(2)
 //        array = (binding.listItem.layoutManager as StaggeredGridLayoutManager).findFirstCompletelyVisibleItemPositions(array)
 
-        viewModel.recyclerViewState = binding.listItem.layoutManager!!.onSaveInstanceState()!!
+        viewModel.recyclerViewState = binding.listItem.layoutManager?.onSaveInstanceState()
 
         super.onPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Timber.i("destroy")
     }
 
     override fun onDestroyView() {
@@ -830,10 +849,9 @@ class OverviewFragment : Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         if(viewModel.recyclerViewState!=null) {
             binding.listItem.layoutManager!!.onRestoreInstanceState(viewModel.recyclerViewState)
-            Toast.makeText(context,"${viewModel.recyclerViewState}",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,"restore ${viewModel.recyclerViewState}",Toast.LENGTH_SHORT).show()
         }
 
         super.onViewCreated(view, savedInstanceState)
@@ -882,10 +900,7 @@ class OverviewFragment : Fragment(){
 //                                   }
 //                                } else{
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
-//        if(viewModel.recyclerViewState!=null) {
-//             binding.listItem.layoutManager!!.onRestoreInstanceState(viewModel.recyclerViewState)
-//            Toast.makeText(context,"${viewModel.recyclerViewState}",Toast.LENGTH_SHORT).show()
-//        }
+
         super.onViewStateRestored(savedInstanceState)
     }
 //                                    note.position = pos

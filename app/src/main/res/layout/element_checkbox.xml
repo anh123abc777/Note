@@ -33,7 +33,7 @@
             android:layout_toRightOf="@id/element_checkbox"
             android:layout_marginStart="8dp"
             android:layout_centerVertical="true"
-
+            strikeThruText="@{dataCheckbox.checked}"
             />
 
         <ImageButton

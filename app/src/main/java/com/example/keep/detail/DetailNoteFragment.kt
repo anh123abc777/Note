@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.forEach
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -30,6 +31,7 @@ import com.example.keep.label.LabelsInNoteIViewAdapter
 import com.example.keep.overview.OverviewViewModel
 import com.example.keep.overview.OverviewViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -84,8 +86,14 @@ class DetailNoteFragment : Fragment() {
         }
 
         if(noteWithLabels==null){
-            noteWithLabels = NoteWithLabels(Note(), listOf())
+            when(noteId) {
 
+                -2 -> noteWithLabels = NoteWithLabels(Note(), listOf())
+
+                -1 -> noteWithLabels = NoteWithLabels(
+                    Note( checkboxes = arrayListOf(DataCheckboxes(0,""))),
+                    listOf())
+            }
         }
 
 
@@ -149,6 +157,7 @@ class DetailNoteFragment : Fragment() {
         viewModel.stateCheckBoxes.observe(viewLifecycleOwner){
             if(it){
                 checkboxesAdapter.submitList(viewModel.noteWithLabels.note.checkboxes)
+                binding.checkboxGroup.visibility = View.VISIBLE
             }
         }
 
@@ -305,7 +314,7 @@ class DetailNoteFragment : Fragment() {
 
     private fun setUpOnBack(){
         binding.contextualActionBar.setNavigationOnClickListener {
-            requireActivity().onBackPressed()
+            findNavController().navigateUp()
         }
     }
 
@@ -467,7 +476,7 @@ class DetailNoteFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-
+        var isEmptyNote = false
         runBlocking {
             withContext(Dispatchers.IO) {
                 val currentNote = viewModel.noteWithLabels.note
@@ -481,8 +490,6 @@ class DetailNoteFragment : Fragment() {
 
                     checkboxes.forEachIndexed { index, s ->
 
-                        Timber.i("checkbox jljk ${(binding.checkboxGroup.findViewHolderForAdapterPosition(index)
-                                as CheckboxGroupAdapter.ViewHolder).binding.textCheckbox.text.toString()}")
                         val labelCheckbox =
                             (binding.checkboxGroup.findViewHolderForAdapterPosition(index)
                                     as CheckboxGroupAdapter.ViewHolder).binding.textCheckbox.text.toString()
@@ -500,13 +507,21 @@ class DetailNoteFragment : Fragment() {
                     checkboxes.clear()
                     checkboxes.addAll(list)
 
-                    timeEdited = System.currentTimeMillis()
+                    if(repository.getRawNote(currentNote.noteId)!=currentNote) {
+                        timeEdited = System.currentTimeMillis()
 
-                    if(repository.getRawNote(currentNote.noteId)!=currentNote)
-                        repository.insert(currentNote)
+                        if(currentNote.content.isNotEmpty() || currentNote.checkboxes.isNotEmpty() ||
+                                currentNote.title.isNotEmpty() || currentNote.images.isNotEmpty())
+                            repository.insert(currentNote)
+                        else{
+                            isEmptyNote = true
+                            }
+
+                    }
                 }
             }
         }
+            overviewModel.emptyNoteDiscarded.value = isEmptyNote
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -60,37 +60,22 @@ class LabelSettingAdapter(private val clickListener : OnClickListener) : ListAda
 
             binding.labelNameView.setOnFocusChangeListener { view, isfocus ->
                 if(isfocus){
-                    when(label.labelId){
-                        Int.MAX_VALUE -> {
-                            binding.startButton.setImageResource(R.drawable.ic_baseline_close_24)
-                            binding.endButton.visibility = View.VISIBLE
-                            binding.startButton.tag = ""
-                            binding.endButton.tag = "add"
 
-                        }
-                        else -> {
                             binding.startButton.setImageResource(R.drawable.ic_baseline_delete_outline_24)
                             binding.endButton.setImageResource(R.drawable.ic_baseline_check_24)
                             binding.startButton.tag = "delete"
                             binding.endButton.tag = ""
-                        }
-                    }
+
                     binding.root.setBackgroundResource(R.drawable.stroke)
                 }
                 else{
-                    when(label.labelId){
-                        Int.MAX_VALUE -> {
-                            binding.startButton.setImageResource(R.drawable.ic_baseline_add_black_24)
-                            binding.endButton.visibility = View.INVISIBLE
-                            binding.startButton.tag = "focus"
-                        }
-                        else -> {
-                            binding.startButton.setImageResource(R.drawable.ic_outline_label_24)
-                            binding.endButton.setImageResource(R.drawable.ic_baseline_edit_24)
-                            binding.endButton.tag = "focus"
-                        }
 
-                    }
+                    binding.startButton.setImageResource(R.drawable.ic_outline_label_24)
+                    binding.endButton.setImageResource(R.drawable.ic_baseline_edit_24)
+                    binding.endButton.tag = "focus"
+                    clickListener.onClick(Label(label.labelId,binding.labelNameView.text.toString()),
+                        position,"update")
+
                     binding.root.background = null
                 }
             }
@@ -108,7 +93,7 @@ class LabelSettingAdapter(private val clickListener : OnClickListener) : ListAda
                     ""  -> binding.labelNameView.clearFocus()
                     "delete" -> {
                         clickListener
-                            .onClick(label.labelId,
+                            .onClick(label,
                                 position,
                                 binding.startButton.tag.toString()
                             )
@@ -156,7 +141,7 @@ class LabelSettingAdapter(private val clickListener : OnClickListener) : ListAda
 
 
 
-    class OnClickListener(val clickListener : (Int, Int ,String) -> Unit){
-        fun onClick(id: Int, pos: Int,signal: String) = clickListener(id,pos,signal)
+    class OnClickListener(val clickListener : (Label, Int ,String) -> Unit){
+        fun onClick(label: Label, pos: Int,signal: String) = clickListener(label,pos,signal)
     }
 }

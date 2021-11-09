@@ -5,9 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.keep.R
 import com.example.keep.adapter.LabelSettingAdapter
+import com.example.keep.database.Label
 import com.example.keep.databinding.FragmentLabelSettingBinding
 import timber.log.Timber
 
@@ -38,11 +40,18 @@ class LabelSettingFragment : Fragment() {
     }
 
     private fun initAdapter(){
-        adapter = LabelSettingAdapter(LabelSettingAdapter.OnClickListener{id, pos,signal ->
+        adapter = LabelSettingAdapter(LabelSettingAdapter.OnClickListener{label, pos,signal ->
             when(signal){
                 "delete" -> {
-                    viewModel.removeLabel(id)
+                    viewModel.removeLabel(pos)
                     adapter.notifyItemRemoved(pos)
+                    Toast.makeText(context,"delete ${pos}",Toast.LENGTH_SHORT).show()
+                }
+
+                "update" -> {
+//                    viewModel.updateLabel(label)
+                    Toast.makeText(context,"update ${label}",Toast.LENGTH_SHORT).show()
+
                 }
                 else -> Timber.i("have problem")
             }
@@ -123,6 +132,10 @@ class LabelSettingFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        viewModel.allLabels.value!!.forEachIndexed { index, label ->
+            val viewHolder = binding.listLabel.findViewHolderForAdapterPosition(index) as LabelSettingAdapter.ViewHolder
+            viewModel.updateLabel(Label(label.labelId,viewHolder.binding.labelNameView.text.toString()))
+        }
         viewModel.saveData()
     }
 }

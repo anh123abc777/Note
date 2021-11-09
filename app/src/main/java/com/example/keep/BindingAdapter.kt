@@ -148,3 +148,8 @@ fun setClickableBottomBar(bottomAppBar: BottomAppBar, stateNote : Int){
         bottomAppBar.menu.setGroupEnabled(0,false)
     }
 }
+
+@BindingAdapter("strikeThruText")
+fun setStrikeText(editText: EditText,checked: Boolean){
+    editText.paint.isStrikeThruText =  checked
+}

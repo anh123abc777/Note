@@ -10,9 +10,12 @@
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" >?attr/colorPrimary</item>
 <!--        <item name="android:datePickerStyle">@style/DatePickerTheme.ButtonBarNegativeButtonStyle</item>-->
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+
+        <item name="android:timePickerDialogTheme">@style/DatePickerTheme</item>
+
         <!-- Customize your theme here. -->
     </style>
     <style name="DatePickerTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
@@ -28,7 +31,6 @@
     </style>
     <style name="DatePickerTheme.ButtonBarPositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@android:color/black</item>
-
-
     </style>
+
 </resources>
