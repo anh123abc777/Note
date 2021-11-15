@@ -101,11 +101,17 @@ class DetailNoteFragment : Fragment() {
                 }
             }
 
+            val firstPosition = runBlocking {
+                withContext(Dispatchers.IO){
+                    repository.getFirstPosition()-1
+                }
+            }
+
             when(requireArguments().getInt("noteId")) {
-                -2 -> noteWithLabels = NoteWithLabels(Note(lastId), overviewModel.labelNavigate)
+                -2 -> noteWithLabels = NoteWithLabels(Note(lastId,position = firstPosition), overviewModel.labelNavigate)
 
                 -1 -> noteWithLabels = NoteWithLabels(
-                    Note(lastId,checkboxes = arrayListOf(DataCheckboxes(0,""))),
+                    Note(lastId,checkboxes = arrayListOf(DataCheckboxes(0,"")),position = firstPosition),
                     overviewModel.labelNavigate)
             }
         }
@@ -359,11 +365,11 @@ class DetailNoteFragment : Fragment() {
             addImage()
             bottomSheetDialog.hide()
         }
-
-        bindingEditContentNote.recording.setOnClickListener {
-            addRecording()
-            bottomSheetDialog.hide()
-        }
+//
+//        bindingEditContentNote.recording.setOnClickListener {
+//            addRecording()
+//            bottomSheetDialog.hide()
+//        }
 
         bindingEditContentNote.checkboxes.setOnClickListener {
             addCheckboxes()
@@ -533,15 +539,16 @@ class DetailNoteFragment : Fragment() {
                     checkboxes.clear()
                     checkboxes.addAll(list)
 
-                    if(repository.getRawNote(currentNote.noteId)!=currentNote) {
+                    if(repository.getRawNote(noteId)!=currentNote) {
                         timeEdited = System.currentTimeMillis()
 
-                        if(currentNote.content.isNotEmpty() || currentNote.checkboxes.isEmpty()||
-                            !(currentNote.checkboxes.size==1 && currentNote.checkboxes[0].text=="") ||
-                            currentNote.title.isNotEmpty() || currentNote.images.isNotEmpty() || viewModel.navigateToLabel
-                        )
-                            repository.insert(currentNote)
-                        else{
+                        if(content.isNotEmpty() || checkboxes.isNotEmpty() ||
+                            (checkboxes.isNotEmpty() && !(checkboxes.size == 1 && checkboxes[0].text == "")) ||
+                            title.isNotEmpty() || images.isNotEmpty() || viewModel.navigateToLabel){
+
+                                repository.insert(currentNote)
+
+                        } else{
                             isEmptyNote = true
                         }
 

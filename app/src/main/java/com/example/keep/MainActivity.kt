@@ -8,7 +8,10 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import android.widget.Toolbar
 import androidx.activity.result.ActivityResultLauncher
@@ -23,8 +26,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.*
+import com.example.keep.R.*
 import com.example.keep.database.DataCheckboxes
 import com.example.keep.database.Note
 import com.example.keep.database.NoteDatabase
@@ -47,6 +50,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
@@ -60,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, layout.activity_main)
         noteRepository = NoteRepository(NoteDatabase.getInstance(application).noteDao)
 
         val factory = OverviewViewModelFactory(this,application)
@@ -74,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             ).apply {
                 gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
             }
-            setHasFixedSize(false)
+            setHasFixedSize(true)
         }
 
 
@@ -888,6 +892,7 @@ class MainActivity : AppCompatActivity() {
                         .map { it.note.noteId}.toIntArray()))
         **/
 
+
         binding.view.visibility = View.VISIBLE
         val fragment = LabelFragment()
         val args = Bundle()
@@ -927,12 +932,24 @@ class MainActivity : AppCompatActivity() {
     private fun setupOptionView(){
         viewModel.optionView.observe(this){
 
-            if(it==OverviewViewModel.OptionView.GRIDVIEW)
+            if(it==OverviewViewModel.OptionView.GRIDVIEW) {
+
+                val layoutManager = StaggeredGridLayoutManager(
+                    2, OrientationHelper.VERTICAL
+                ).apply {
+                    gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+                }
+                binding.listItem.setHasFixedSize(true)
+                binding.listItem.layoutManager = layoutManager
+                binding.listItem.itemAnimator = DefaultItemAnimator()
+
+            }
+            else {
                 binding.listItem.layoutManager =
-                    StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
-            else
-                binding.listItem.layoutManager =
-                    LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false)
+                    LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+            }
+
         }
 
     }

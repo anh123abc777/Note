@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.*
 import android.widget.Toast
+import androidx.core.view.allViews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingDataAdapter
@@ -63,8 +64,16 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
 
             val gesture = createGesture(clickListener,note)
 
-            itemView.setOnTouchListener { _, motionEvent ->
-                gesture.onTouchEvent(motionEvent)
+//            binding.root.setOnTouchListener { _, motionEvent ->
+//                gesture.onTouchEvent(motionEvent)
+//                true
+//            }
+
+            itemView.allViews.all {
+                it.setOnTouchListener { _, motionEvent ->
+                    gesture.onTouchEvent(motionEvent)
+                    true
+                }
                 true
             }
 
@@ -82,6 +91,7 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
         private fun setMaxHeightEachView(){
             binding.root.post {
             val maxHeight = Resources.getSystem().displayMetrics.heightPixels/3
+
                 binding.content.post {
                     if (binding.content.height > maxHeight)
                         binding.content.height = maxHeight
@@ -104,10 +114,6 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
                     }
                 }
             }
-//            binding.root.post {
-//                val maxHeight = binding.root.height / 4
-//
-//            }
         }
 
         private fun setAdapterEachView(note: NoteWithLabels){
@@ -178,9 +184,13 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
     }
 
 
+    override fun getItemId(position: Int): Long {
+        return getItem(position).id.toLong()
+    }
 
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder   {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder   {
         return when (viewType) {
             ITEM_VIEW_TYPE_HEADER -> TextViewHolder.from(parent)
             ITEM_VIEW_TYPE_ITEM -> ViewHolder.from(parent)

@@ -1,16 +1,16 @@
 package com.example.keep
 
-import android.app.Application
+import android.content.res.Resources
 import android.graphics.Color
 import android.net.Uri
+import android.provider.MediaStore
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.*
 import androidx.databinding.BindingAdapter
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.example.keep.adapter.LabelsAdapter
 import com.example.keep.checkbox.CheckboxGroupAdapter
 import com.example.keep.database.*
 import com.example.keep.image.ImagesAdapter
@@ -19,6 +19,7 @@ import com.example.keep.overview.NotesAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomappbar.BottomAppBar
 import java.text.SimpleDateFormat
+
 
 @BindingAdapter("listData")
 fun bindRecyclerView(recyclerView: RecyclerView, data:List<Note>){
@@ -40,6 +41,7 @@ fun bindImagesRecyclerView(recyclerView: RecyclerView,data: ArrayList<String>?){
 
 }
 
+
 @BindingAdapter("listCheckboxes")
 fun bindCheckboxesRecyclerView(recyclerView: RecyclerView,data: List<DataCheckboxes>?){
     if (!data.isNullOrEmpty()) {
@@ -52,6 +54,8 @@ fun bindCheckboxesRecyclerView(recyclerView: RecyclerView,data: List<DataCheckbo
         recyclerView.visibility = View.GONE
 
 }
+
+
 
 @BindingAdapter(value=["listLabels","timeReminder"])
 fun bindLabelsRecyclerView(recyclerView: RecyclerView,data: List<Label>?,timeReminder: Long){
@@ -80,9 +84,18 @@ fun bindLabelsRecyclerView(recyclerView: RecyclerView,data: List<Label>?,timeRem
 //    adapter.submitList(data)
 //}
 
-@BindingAdapter("resourceImage")
-fun setResourceImage(imageView: ImageView, uri : Uri){
+@BindingAdapter(value = ["resourceImage","isOverview"])
+fun setResourceImage(imageView: ImageView, uri : Uri,isOverview: Boolean){
     imageView.setImageURI(uri)
+    if (isOverview) {
+        val maxHeight = Resources.getSystem().displayMetrics.heightPixels / 3
+            if (imageView.height > maxHeight){
+                var params: ViewGroup.LayoutParams = imageView.layoutParams
+                params.height = maxHeight
+                imageView.layoutParams = params
+            }
+
+    }
 }
 
 @BindingAdapter("setIcon")

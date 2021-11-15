@@ -224,8 +224,11 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
                 (image != "") -> {
                     runBlocking {
                         withContext(Dispatchers.IO) {
+
+                            val firstPosition = repository.getFirstPosition()-1
+
                             repository.insert(
-                                Note(images = arrayListOf(image))
+                                Note(images = arrayListOf(image),position = firstPosition)
                             )
                         }
                     }

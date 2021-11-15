@@ -22,10 +22,9 @@
             android:orientation="vertical"
             android:layout_margin="4dp"
             android:background="@drawable/border"
-            android:paddingTop="4dp"
             android:paddingBottom="4dp"
-            app:elevation="0dp"
             android:tag="isNotSelect"
+            android:elevation="4dp"
             >
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/images"
@@ -34,9 +33,12 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="vertical"
                 tools:listitem="@layout/element_image"
-                android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 listDataImages="@{noteWithLabels.note.images}"
+                android:clickable="false"
+                android:elevation="0dp"
+                android:clipToOutline="false"
+                android:background="@color/reply_blue_800"
                 />
 
             <TextView
@@ -45,6 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
+                android:layout_marginTop="4dp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="bold"
                 android:gravity="fill_horizontal"
@@ -75,8 +78,8 @@
                 android:layout_marginRight="8dp"
                 android:fontFamily="sans-serif-medium"
                 android:text="@{noteWithLabels.note.content}"
-
                 android:textSize="14sp" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/labels"
                 android:layout_width="match_parent"
