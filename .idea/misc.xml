@@ -16,6 +16,10 @@
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/drawable/ic_round_content_copy_24.xml" value="0.2625" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/drawable/item_label_in_label_setting_view.xml" value="0.188" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/drawable/tri_state_button.xml" value="0.1825" />
+        <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/font/work_sans.xml" value="0.28958333333333336" />
+        <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/font/work_sans_bold.xml" value="0.28958333333333336" />
+        <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/font/work_sans_extrabold.xml" value="0.28958333333333336" />
+        <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/font/work_sans_medium.xml" value="0.28958333333333336" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/activity_main.xml" value="0.12613981762917933" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/date_time_picker.xml" value="0.152" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/drawer_menu_item.xml" value="0.259375" />
@@ -36,6 +40,7 @@
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/function_edit_content_note_bottom_sheet_layout.xml" value="0.1634963768115942" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/function_setting_note_bottom_sheet_layout.xml" value="0.259375" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/header.xml" value="0.264" />
+        <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/item_checkbox_in_overview.xml" value="0.259375" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/item_filter.xml" value="0.259375" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/item_label_in_label_setting_view.xml" value="0.1634963768115942" />
         <entry key="..\:/Users/haohao/Documents/Kotlin/TRAINING/Keep/app/src/main/res/layout/labels_view_in_drawer.xml" value="0.259375" />

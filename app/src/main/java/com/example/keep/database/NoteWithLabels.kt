@@ -11,5 +11,5 @@ data class NoteWithLabels(
         entityColumn = "labelId",
         associateBy = Junction(NoteLabelCrossRef::class)
     )
-    val labels : List<Label>?= emptyList()
+    var labels : List<Label>?= emptyList()
 )

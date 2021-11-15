@@ -46,12 +46,6 @@ class OverviewFragment : Fragment(){
     private lateinit var noteRepository: NoteRepository
     private lateinit var application: Application
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments = Bundle()
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

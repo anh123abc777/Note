@@ -10,139 +10,148 @@
     </data>
 
 
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/frame_note"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".detail.DetailNoteFragment">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/frame_note"
+        <androidx.drawerlayout.widget.DrawerLayout
+            android:id="@+id/navigate_to_label"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="8dp"
-            tools:context=".detail.DetailNoteFragment"
-            >
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/contextualActionBar"
-                style="@style/Widget.AppCompat.Toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_gravity="top"
-                app:menu="@menu/detail_view_toolbar_menu"
-                app:navigationIcon="@drawable/ic_baseline_keyboard_backspace_24"
-                android:background="@color/white"
-                />
-            <androidx.core.widget.NestedScrollView
+            android:elevation="100dp"
+            android:background="@color/white"
+            android:visibility="gone"
+            />
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/contextualActionBar"
+            style="@style/Widget.AppCompat.Toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="top"
+            android:background="@color/white"
+            app:menu="@menu/detail_view_toolbar_menu"
+            app:navigationIcon="@drawable/ic_baseline_keyboard_backspace_24" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="56dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom ="100dp"
-                android:clipToPadding="false"
-                android:layout_marginTop="56dp"
-                >
-                <LinearLayout
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/image_list"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/image_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                        android:orientation="vertical"
-                        app:spanCount="1"
-                        android:nestedScrollingEnabled="false"
-                        tools:listitem="@layout/element_image"
-                        />
-<!--                    app:reverseLayout="true"-->
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="1"
+                    tools:listitem="@layout/element_image" />
+                <!--                    app:reverseLayout="true"-->
 
-                    <EditText
-                        android:id="@+id/title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-medium"
-                        android:textSize="18sp"
-                        android:text="@{viewModel.noteWithLabels.note.title}"
-                        android:background="@android:color/transparent"
-                        android:layout_margin="16dp"
-                        android:hint="@string/title"
-                        clickableWithStateNote="@{viewModel.noteWithLabels.note.state}"
-                        />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/checkbox_group"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        tools:listitem="@layout/element_checkbox"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        android:orientation="vertical"
-                        listCheckboxes="@{viewModel.noteWithLabels.note.checkboxes}"
-                        />
-
-                    <ImageButton
-                        android:id="@+id/add_check_box"
-                        android:layout_width="80dp"
-                        android:layout_height="24dp"
-                        android:gravity="center"
-                        android:layout_gravity="center_horizontal"
-                        android:src="@drawable/ic_baseline_add_24"
-                        android:onClick="@{() -> viewModel.addCheckbox()}"
-                        visibilityButtonAdd="@{viewModel.stateCheckBoxes}"
-                        android:background="#FFC107"
-                        app:tint="@color/black" />
-
-                    <EditText
-                        android:id="@+id/content"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:text="@{viewModel.noteWithLabels.note.content}"
-                        android:background="@android:color/transparent"
-                        android:layout_margin="16dp"
-                        visibilityContent="@{viewModel.stateCheckBoxes}"
-                        android:hint="content"
-                        clickableWithStateNote="@{viewModel.noteWithLabels.note.state}"
-                        />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/labels"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-                        tools:listitem="@layout/element_label_in_note_view"
-                        listLabels="@{viewModel.noteWithLabels.labels}"
-                        timeReminder="@{viewModel.noteWithLabels.note.timeReminder}"
-                        android:orientation="horizontal"
-                        />
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
-            <com.google.android.material.bottomappbar.BottomAppBar
-                android:id="@+id/bottom_app_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:gravity="bottom"
-                app:backgroundTint="#D7FFFFFF"
-                app:navigationIcon="@drawable/ic_outline_add_box_24"
-                android:layout_marginTop="56dp"
-                app:menu="@menu/bottom_app_bar_in_detail"
-                clickableWithStateNote="@{viewModel.noteWithLabels.note.state}"
-                >
-                <RelativeLayout
+                <EditText
+                    android:id="@+id/title"
+                    clickableWithStateNote="@{viewModel.noteWithLabels.note.state}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
                     android:background="@android:color/transparent"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="bold"
+                    android:textColor="#121212"
+                android:hint="@string/title"
+                    android:text="@{viewModel.noteWithLabels.note.title}"
+                    android:textSize="22sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/checkbox_group"
+                    listCheckboxes="@{viewModel.noteWithLabels.note.checkboxes}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/element_checkbox" />
+
+                <ImageButton
+                    android:id="@+id/add_check_box"
+                    visibilityButtonAdd="@{viewModel.stateCheckBoxes}"
+                    android:layout_width="80dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center_horizontal"
-                    android:gravity="center_horizontal"
-                    >
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/time_edit_text"
-                        style="?android:attr/borderlessButtonStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:text="@{viewModel.timeEditedString}"
-                        android:fontFamily="sans-serif"
-                        android:textSize="12sp"
-                        android:textColor="#a1887f"
-                         />
-                </RelativeLayout>
-            </com.google.android.material.bottomappbar.BottomAppBar>
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    android:background="#FFC107"
+                    android:gravity="center"
+                    android:onClick="@{() -> viewModel.addCheckbox()}"
+                    android:src="@drawable/ic_baseline_add_24"
+                    app:tint="@color/black" />
+
+                <EditText
+                    android:id="@+id/content"
+                    clickableWithStateNote="@{viewModel.noteWithLabels.note.state}"
+                    visibilityContent="@{viewModel.stateCheckBoxes}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:background="@android:color/transparent"
+                    android:hint="content"
+                    android:textColor="#121212"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@{viewModel.noteWithLabels.note.content}"
+                    android:textSize="16sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/labels"
+                    listLabels="@{viewModel.noteWithLabels.labels}"
+                    timeReminder="@{viewModel.noteWithLabels.note.timeReminder}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+                    tools:listitem="@layout/element_label_in_note_view" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottom_app_bar"
+            clickableWithStateNote="@{viewModel.noteWithLabels.note.state}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="56dp"
+            android:gravity="bottom"
+            app:backgroundTint="#D7FFFFFF"
+            app:menu="@menu/bottom_app_bar_in_detail"
+            app:navigationIcon="@drawable/ic_outline_add_box_24">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/transparent"
+                android:gravity="center_horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/time_edit_text"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:fontFamily="sans-serif"
+                    android:text="@{viewModel.timeEditedString}"
+                    android:textColor="#a1887f"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+        </com.google.android.material.bottomappbar.BottomAppBar>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

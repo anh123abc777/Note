@@ -37,6 +37,7 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
     private val TRASH = -1
     var recyclerViewState : Parcelable? = null
     private var _noteNavigate = MutableLiveData<Int>()
+    var labelNavigate = listOf<Label>()
     private var _notesSelected = MutableLiveData<MutableList<NoteWithLabels>>()
     private var _optionView = MutableLiveData<OptionView>()
     private var _navigateToSearch = MutableLiveData<Boolean>()
@@ -89,13 +90,13 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
         createNotificationChannel()
         _currentNotesInView.value = NORMAL
         _notesSelected.value = mutableListOf()
-//        _optionView.value = OptionView.GRIDVIEW
+        _optionView.value = OptionView.GRIDVIEW
             callback = CustomItemTouchHelper(normalNotes,_notesSelected,repository)
             itemTouchHelper = ItemTouchHelper(callback)
     }
 
     fun changeOptionView(){
-        _optionView.value = if(_optionView.value == OptionView.GRIDVIEW)
+        _optionView.value = if(_optionView.value != OptionView.GRIDVIEW)
                      OptionView.GRIDVIEW
                     else OptionView.LISTVIEW
     }
@@ -228,6 +229,15 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
                             )
                         }
                     }
+
+                    runBlocking {
+                        withContext(Dispatchers.IO) {
+                            if(labelNavigate.isNotEmpty()){
+                                repository.addLabelToNote(repository.getLastNote(),labelNavigate[0])
+                            }
+                        }
+                    }
+
                     runBlocking {
                         withContext(Dispatchers.IO){
                             repository.get(repository.getLastNote().noteId)
@@ -458,6 +468,10 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
 
     fun setMenuItemForNormalNotes(){
         _currentNotesInView.value = NORMAL
+    }
+
+    fun setUpLabelNavigate(labels: List<Label>?){
+        labelNavigate = labels ?: listOf()
     }
 
     enum class OptionView{GRIDVIEW,LISTVIEW}

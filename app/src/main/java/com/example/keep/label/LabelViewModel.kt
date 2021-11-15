@@ -10,17 +10,17 @@ import com.example.keep.adapter.DataLabelsAdapter
 import com.example.keep.database.*
 import kotlinx.coroutines.*
 import timber.log.Timber
+import java.lang.Exception
 
 class LabelViewModel(private val noteIdsToLabel: IntArray?,
                      val application: Application) : ViewModel() {
 
 
-    private var notesToLabel : List<NoteWithLabels>
+    var notesToLabel : List<NoteWithLabels>
     private val noteRepository = NoteRepository(NoteDatabase.getInstance(application).noteDao)
     private val labelRepository = LabelRepository(NoteDatabase.getInstance(application).labelDao)
     private val viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-    val bundleFromFragmentBToFragmentA = MutableLiveData<Bundle>()
 
     var labels: LiveData<List<LabelWithNotes>> = labelRepository.allLabelWithNotes
     var noteLabelCrossRef: LiveData<List<NoteLabelCrossRef>> = noteRepository.allNoteLabelCrossRef
@@ -32,7 +32,7 @@ class LabelViewModel(private val noteIdsToLabel: IntArray?,
                     noteRepository.get(it)
                 }
             }
-        } ?: emptyList()
+        } ?: listOf(NoteWithLabels(Note(), emptyList()))
 
 //        runBlocking {
 //            withContext(Dispatchers.IO){
@@ -43,8 +43,6 @@ class LabelViewModel(private val noteIdsToLabel: IntArray?,
 //                labelRepository.insert(Label("Future"))
 //            }
 //        }
-
-
     }
 
     fun updateNotesToLabel(){
@@ -68,16 +66,23 @@ class LabelViewModel(private val noteIdsToLabel: IntArray?,
 
             when {
                 notesToLabel.all {  noteWithLabels ->
-                    noteWithLabels.labels!!.contains(labelWithNotes.label)
+                    noteWithLabels?.labels?.contains(labelWithNotes.label) == true
                             } -> {
                                 dataAdapter.add(DataLabelsAdapter(labelWithNotes.label, TriStateMaterialCheckBox.STATE_CHECKED))
                             }
 
                 notesToLabel.all {  noteWithLabels ->
-                    !noteWithLabels.labels!!.contains(labelWithNotes.label)
+                    noteWithLabels?.labels?.contains(labelWithNotes.label) == false
                             } -> {
                                 dataAdapter.add(DataLabelsAdapter(labelWithNotes.label,TriStateMaterialCheckBox.STATE_UNCHECKED))
                             }
+
+                notesToLabel.all {  noteWithLabels ->
+                    noteWithLabels== null
+                } -> {
+                    dataAdapter.add(DataLabelsAdapter(labelWithNotes.label,TriStateMaterialCheckBox.STATE_UNCHECKED))
+
+                }
 
                 else -> {
                               dataAdapter.add(DataLabelsAdapter(labelWithNotes.label,TriStateMaterialCheckBox.STATE_INDETERMINATE))
@@ -100,14 +105,18 @@ class LabelViewModel(private val noteIdsToLabel: IntArray?,
     }
 
     fun addLabelToNote(label: Label) {
-        notesToLabel.forEach { noteWithLabels ->
-            runBlocking {
-                withContext(Dispatchers.IO) {
-                    noteRepository.addLabelToNote(noteWithLabels.note, label)
+        try {
+            notesToLabel?.forEach { noteWithLabels ->
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        noteRepository.addLabelToNote(noteWithLabels.note, label)
+                    }
                 }
             }
         }
-        Timber.i("done add Label To Note")
+        catch (e : Exception) {
+            Timber.i("done add Label To Note")
+        }
     }
 
     fun removeAllLabelOnNotes(label: Label){

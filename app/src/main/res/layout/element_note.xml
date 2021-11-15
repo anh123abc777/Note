@@ -38,17 +38,19 @@
                 android:layout_marginBottom="4dp"
                 listDataImages="@{noteWithLabels.note.images}"
                 />
+
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textSize="18sp"
-                android:text="@{noteWithLabels.note.title}"
-                android:gravity="fill_horizontal"
-                android:layout_marginRight="8dp"
                 android:layout_marginLeft="8dp"
-                />
+                android:layout_marginRight="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"
+                android:gravity="fill_horizontal"
+                android:text="@{noteWithLabels.note.title}"
+
+                android:textSize="18sp" />
 <!--            android:text="@{noteWithLabels.title}"-->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/checkbox_group"
@@ -66,15 +68,15 @@
 
             <TextView
                 android:id="@+id/content"
+                visibilityContent="@{noteWithLabels.note.checkboxes}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:text="@{noteWithLabels.note.content}"
-                visibilityContent="@{noteWithLabels.note.checkboxes}"
-                android:layout_marginRight="8dp"
                 android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="@{noteWithLabels.note.content}"
 
-            />
+                android:textSize="14sp" />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/labels"
                 android:layout_width="match_parent"

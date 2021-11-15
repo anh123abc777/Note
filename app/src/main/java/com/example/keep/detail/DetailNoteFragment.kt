@@ -17,6 +17,7 @@ import androidx.core.net.toUri
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.keep.R
@@ -27,6 +28,7 @@ import com.example.keep.databinding.FragmentDetailNoteBinding
 import com.example.keep.databinding.FunctionEditContentNoteBottomSheetLayoutBinding
 import com.example.keep.databinding.FunctionSettingNoteBottomSheetLayoutBinding
 import com.example.keep.image.ImagesAdapter
+import com.example.keep.label.LabelFragment
 import com.example.keep.label.LabelsInNoteIViewAdapter
 import com.example.keep.overview.OverviewViewModel
 import com.example.keep.overview.OverviewViewModelFactory
@@ -38,9 +40,11 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
-import java.lang.NullPointerException
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.NullPointerException
+
 //
 
 class DetailNoteFragment : Fragment() {
@@ -54,13 +58,14 @@ class DetailNoteFragment : Fragment() {
     private lateinit var application: Application
     private var noteId: Int = 0
     private lateinit var overviewModel: OverviewViewModel
-    private var noteWithLabels = NoteWithLabels(Note(), listOf())
+    private var noteWithLabels = NoteWithLabels(Note(-1), listOf())
 
 
     private val REMOVE = 0
     private val EDIT = 1
 
 
+    @SuppressLint("UseRequireInsteadOfGet")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -74,25 +79,34 @@ class DetailNoteFragment : Fragment() {
         application = requireNotNull(activity).application
         repository = NoteRepository(NoteDatabase.getInstance(application).noteDao)
 
-        runBlocking {
-            withContext(Dispatchers.IO){
+        val overFactory = OverviewViewModelFactory(requireActivity(),application)
+        overviewModel = ViewModelProvider(requireActivity(),overFactory).get(OverviewViewModel::class.java)
 
-                noteWithLabels = try {
-                    repository.get(noteId)
-                }catch (e : NullPointerException){
-                    NoteWithLabels(Note(), listOf())
+        noteWithLabels =
+            try {
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        repository.get(noteId)
+                    }
                 }
+            } catch (e : Exception){
+                NoteWithLabels(Note(-1), listOf())
             }
-        }
 
         if(noteWithLabels==null){
-            when(noteId) {
 
-                -2 -> noteWithLabels = NoteWithLabels(Note(), listOf())
+            val lastId = runBlocking {
+                withContext(Dispatchers.IO){
+                    repository.getLastNote().noteId+1
+                }
+            }
+
+            when(requireArguments().getInt("noteId")) {
+                -2 -> noteWithLabels = NoteWithLabels(Note(lastId), overviewModel.labelNavigate)
 
                 -1 -> noteWithLabels = NoteWithLabels(
-                    Note( checkboxes = arrayListOf(DataCheckboxes(0,""))),
-                    listOf())
+                    Note(lastId,checkboxes = arrayListOf(DataCheckboxes(0,""))),
+                    overviewModel.labelNavigate)
             }
         }
 
@@ -103,7 +117,7 @@ class DetailNoteFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-         imageAdapter = ImagesAdapter()
+        imageAdapter = ImagesAdapter()
         binding.imageList.adapter = imageAdapter
 
 
@@ -142,8 +156,8 @@ class DetailNoteFragment : Fragment() {
         binding.checkboxGroup.adapter = checkboxesAdapter
 
 
-            val labelsAdapter = LabelsInNoteIViewAdapter()
-            binding.labels.adapter = labelsAdapter
+        val labelsAdapter = LabelsInNoteIViewAdapter()
+        binding.labels.adapter = labelsAdapter
 //            adapter.submitList(noteWithLabels.labels)
 
 
@@ -164,7 +178,7 @@ class DetailNoteFragment : Fragment() {
         setUpBottomAppbar()
         setUpAppbar()
 
-         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
             if(result.resultCode == Activity.RESULT_OK){
                 val data : String? = result.data?.dataString
                 Timber.i("Data ${result.data}")
@@ -314,7 +328,7 @@ class DetailNoteFragment : Fragment() {
 
     private fun setUpOnBack(){
         binding.contextualActionBar.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            requireActivity().onBackPressed()
         }
     }
 
@@ -470,8 +484,20 @@ class DetailNoteFragment : Fragment() {
     }
 
     private fun addLabels(){
-        findNavController().navigate(DetailNoteFragmentDirections.actionDetailNoteFragmentToLabelFragment(
-            intArrayOf(noteId)))
+
+        viewModel.navigateToLabel = true
+        val fragment = LabelFragment()
+        val args = Bundle()
+
+        args.putIntArray("noteIdsToLabel", intArrayOf(noteId))
+        args.putBoolean("isFromDetail",true)
+        fragment.arguments = args
+
+        val ft: FragmentTransaction = parentFragmentManager.beginTransaction()
+//                ft.setCustomAnimations(R.anim.zoom_in,R.anim.zoom_out)
+        ft.replace(R.id.view, fragment)
+        ft.addToBackStack(null)
+        ft.commit()
     }
 
     override fun onPause() {
@@ -510,28 +536,35 @@ class DetailNoteFragment : Fragment() {
                     if(repository.getRawNote(currentNote.noteId)!=currentNote) {
                         timeEdited = System.currentTimeMillis()
 
-                        if(currentNote.content.isNotEmpty() || currentNote.checkboxes.isNotEmpty() ||
-                                currentNote.title.isNotEmpty() || currentNote.images.isNotEmpty())
+                        if(currentNote.content.isNotEmpty() || currentNote.checkboxes.isEmpty()||
+                            !(currentNote.checkboxes.size==1 && currentNote.checkboxes[0].text=="") ||
+                            currentNote.title.isNotEmpty() || currentNote.images.isNotEmpty() || viewModel.navigateToLabel
+                        )
                             repository.insert(currentNote)
                         else{
                             isEmptyNote = true
-                            }
+                        }
 
                     }
                 }
+                viewModel.noteWithLabels.labels?.forEach {
+                    repository.addLabelToNote(currentNote, it)
+                }
             }
         }
-            overviewModel.emptyNoteDiscarded.value = isEmptyNote
+        overviewModel.emptyNoteDiscarded.value = isEmptyNote
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val overFactory = OverviewViewModelFactory(requireActivity(),application)
-        overviewModel = ViewModelProvider(requireActivity(),overFactory).get(OverviewViewModel::class.java)
 //        overviewModel.createNotificationChannel()
     }
 
     override fun onStop() {
+        overviewModel.labelNavigate = listOf()
+        viewModel.navigateToLabel = false
         super.onStop()
     }
+
+
 }

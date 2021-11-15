@@ -15,7 +15,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class DetailNoteViewModel(val noteWithLabels: NoteWithLabels,val repository: NoteRepository) : ViewModel() {
+class DetailNoteViewModel(var noteWithLabels: NoteWithLabels,val repository: NoteRepository) : ViewModel() {
+
 
     private var _addButtonClicked = MutableLiveData<Boolean>()
     val addButtonClicked : LiveData<Boolean>
@@ -26,6 +27,8 @@ class DetailNoteViewModel(val noteWithLabels: NoteWithLabels,val repository: Not
         get() = _stateCheckboxes
 
      val timeEditedString = convertLongToDateString(noteWithLabels.note.timeEdited)
+    var navigateToLabel = false
+
 
     init {
         _stateCheckboxes.value = noteWithLabels.note.checkboxes.isNotEmpty()

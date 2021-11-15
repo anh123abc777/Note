@@ -1,7 +1,6 @@
 package com.example.keep.label
 
 import android.app.Application
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,7 +13,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.keep.TriStateMaterialCheckBox
 import com.example.keep.adapter.LabelsAdapter
+import com.example.keep.database.Label
+import com.example.keep.database.NoteDatabase
+import com.example.keep.database.NoteRepository
+import com.example.keep.database.NoteWithLabels
 import com.example.keep.databinding.FragmentLabelBinding
+import com.example.keep.detail.DetailNoteFragment
+import com.example.keep.detail.DetailNoteViewModel
+import com.example.keep.detail.DetailNoteViewModelFactory
 import com.example.keep.overview.OverviewViewModel
 import com.example.keep.overview.OverviewViewModelFactory
 import timber.log.Timber
@@ -26,6 +32,9 @@ class LabelFragment : Fragment() {
     private lateinit var adapter: LabelsAdapter
     private lateinit var overViewModel: OverviewViewModel
     private lateinit var application: Application
+    private lateinit var detailNoteViewModel: DetailNoteViewModel
+    private lateinit var noteIdsToLabel : IntArray
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,7 +42,7 @@ class LabelFragment : Fragment() {
 
         binding = FragmentLabelBinding.inflate(inflater)
 
-        val noteIdsToLabel = LabelFragmentArgs.fromBundle(requireArguments()).noteIdsToLabel
+        noteIdsToLabel = LabelFragmentArgs.fromBundle(requireArguments()).noteIdsToLabel
         application = requireNotNull(activity).application
 
         val factory = LabelViewModelFactory(noteIdsToLabel,application)
@@ -44,6 +53,7 @@ class LabelFragment : Fragment() {
         adapter = LabelsAdapter(LabelsAdapter.OnClickListener {
             saveLabelNotes()
         })
+
         binding.listLabel.adapter =adapter
 
 
@@ -90,9 +100,12 @@ class LabelFragment : Fragment() {
         }
     }
 
+
+
     override fun onPause() {
         super.onPause()
         saveLabelNotes()
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -119,6 +132,8 @@ class LabelFragment : Fragment() {
     }
 
     private fun saveLabelNotes(){
+
+        var listLabels = mutableListOf<Label>()
             adapter.currentList.forEachIndexed { index, dataLabelsAdapter ->
                 val viewHolder = binding.listLabel
                     .findViewHolderForAdapterPosition(index) as LabelsAdapter.ViewHolder
@@ -127,16 +142,23 @@ class LabelFragment : Fragment() {
                     TriStateMaterialCheckBox.STATE_CHECKED -> {
                         viewModel
                             .addLabelToNote(dataLabelsAdapter.label)
+                        listLabels.add(dataLabelsAdapter.label)
                     }
 
                     TriStateMaterialCheckBox.STATE_UNCHECKED -> {
                         viewModel
                             .removeAllLabelOnNotes(dataLabelsAdapter.label)
+                        listLabels.removeIf { it == dataLabelsAdapter.label }
                     }
+
                     else -> Timber.i("nothing happens")
                 }
             }
             Timber.i("on save label normalNotes")
+
+        if(arguments?.getBoolean("isFromDetail") == true) {
+            overViewModel.setUpLabelNavigate(listLabels)
+        }
 
     }
 

@@ -111,8 +111,8 @@ fun setVisibilityContent(textView: TextView,checkboxGroup : List<DataCheckboxes>
 //}
 
 @BindingAdapter(value =["actionBarVisibility","window"])
-fun setActionBarVisibility(actionBar: MaterialToolbar, notesSelected : LiveData<MutableList<NoteWithLabels>>, window: Window){
-    if(notesSelected.value!!.isNotEmpty()){
+fun setActionBarVisibility(actionBar: MaterialToolbar, notesSelected : MutableList<NoteWithLabels>, window: Window){
+    if(notesSelected.isNotEmpty()){
         actionBar.visibility = View.VISIBLE
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.decorView.systemUiVisibility = View.STATUS_BAR_HIDDEN

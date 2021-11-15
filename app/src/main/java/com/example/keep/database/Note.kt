@@ -33,7 +33,7 @@ data class Note(
     var position : Int = noteId,
 
     @ColumnInfo(name = "timeEdited")
-    var timeEdited: Long = System.currentTimeMillis(),
+    var timeEdited: Long =0L,
 
     @ColumnInfo(name = "timeReminder")
     var timeReminder : Long = 0L,
