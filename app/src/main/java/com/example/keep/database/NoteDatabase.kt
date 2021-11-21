@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Note::class,Label::class,NoteLabelCrossRef::class], version = 2, exportSchema = false)
+@Database(entities = [Note::class,Label::class,NoteLabelCrossRef::class], version = 3, exportSchema = false)
 //@TypeConverters(Converter::class)
 @TypeConverters(MapTypeConverter::class,Converter::class)
 abstract class NoteDatabase : RoomDatabase(){

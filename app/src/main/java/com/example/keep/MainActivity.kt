@@ -69,14 +69,14 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        binding.listItem.apply {
-            layoutManager = StaggeredGridLayoutManager(
-                2, StaggeredGridLayoutManager.VERTICAL
-            ).apply {
-                gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
-            }
-            setHasFixedSize(true)
-        }
+//        binding.listItem.apply {
+//            layoutManager = StaggeredGridLayoutManager(
+//                2, StaggeredGridLayoutManager.VERTICAL
+//            ).apply {
+//                gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+//            }
+//            setHasFixedSize(false)
+//        }
 
 
         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
@@ -195,6 +195,7 @@ class MainActivity : AppCompatActivity() {
             it?.let {
                 if (viewModel.currentNotesInView.value== 0) {
                     adapter.addHeaderAndSubmitList(it)
+                    Toast.makeText(this,"${it}",Toast.LENGTH_SHORT).show()
                 }
                 adapter.initNotes(it)
 
@@ -518,6 +519,7 @@ class MainActivity : AppCompatActivity() {
             when (menutItem.itemId) {
                 R.id.notes -> {
                     binding.bottomAppBar.visibility = View.VISIBLE
+                    binding.floating.visibility = View.VISIBLE
                     viewModel.setMenuItemForNormalNotes()
                     adapter.filterLabel(null,false)
                     viewModel.stopSearching()
@@ -537,8 +539,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.archive -> {
                     adapter.showNotesArchive(viewModel.archiveNotes.value!!)
                     viewModel.setMenuItemForArchiveNotes()
-                    binding.bottomAppBar.visibility = View.GONE
-                    binding.floating.visibility = View.GONE
+                    binding.bottomAppBar.visibility = View.INVISIBLE
+                    binding.floating.visibility = View.INVISIBLE
                     viewModel.setUpLabelNavigate(null)
 
                 }
@@ -546,8 +548,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.trash -> {
                     adapter.showNotesTrash(viewModel.trashNotes.value!!)
                     viewModel.setMenuItemForTrashNotes()
-                    binding.bottomAppBar.visibility = View.GONE
-                    binding.floating.visibility = View.GONE
+                    binding.bottomAppBar.visibility = View.INVISIBLE
+                    binding.floating.visibility = View.INVISIBLE
                     viewModel.setUpLabelNavigate(null)
                 }
                 else -> Toast.makeText(
@@ -934,7 +936,7 @@ class MainActivity : AppCompatActivity() {
                     invalidateSpanAssignments()
                 }
 
-                binding.listItem.setHasFixedSize(true)
+                binding.listItem.setHasFixedSize(false)
                 binding.listItem.layoutManager = layoutManager
 
             }

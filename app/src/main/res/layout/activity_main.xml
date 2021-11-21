@@ -26,7 +26,7 @@
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
                 android:background="@color/white"
-                android:elevation="1000dp"
+                android:elevation="100dp"
                 android:visibility="invisible"
                 >
 
@@ -73,15 +73,7 @@
                         android:elevation="32dp">
 
 
-                        <!--                        <ImageView-->
-                        <!--                            android:id="@+id/action_menu"-->
-                        <!--                            android:layout_width="32dp"-->
-                        <!--                            android:layout_height="32dp"-->
-                        <!--                            android:layout_alignParentStart="true"-->
-                        <!--                            android:layout_centerVertical="true"-->
-                        <!--                            android:layout_marginStart="24dp"-->
-                        <!--                            android:src="@drawable/ic_baseline_dehaze_24"-->
-                        <!--                            />-->
+
 
                         <TextView
                             android:id="@+id/hintSearch"
@@ -93,27 +85,11 @@
                             android:onClick="@{() -> viewModel.navigateToSearchView()}"
                             />
 
-                        <!--                        <ImageView-->
-                        <!--                            android:id="@+id/optionView"-->
-                        <!--                            android:layout_width="32dp"-->
-                        <!--                            android:layout_height="32dp"-->
-                        <!--                            android:layout_alignParentEnd="true"-->
-                        <!--                            android:layout_centerVertical="true"-->
-                        <!--                            android:layout_marginEnd="24dp"-->
-                        <!--                            android:onClick="@{() -> viewModel.changeOptionView()}"-->
-                        <!--                            android:src="@drawable/ic_baseline_grid_view_24" />-->
-                    </RelativeLayout>
+                          </RelativeLayout>
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.AppBarLayout>
 
-            <!--        <androidx.core.widget.NestedScrollView-->
-            <!--            android:id="@+id/nested_scroll_view"-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-            <!--            android:paddingBottom="56dp"-->
-            <!--            android:paddingTop="16dp"-->
-            <!--            >-->
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_item"
@@ -127,13 +103,6 @@
                 />
 
 
-            <!--        </androidx.core.widget.NestedScrollView>-->
-            listData="@{viewModel.normalNotes}"
-            <!--            </FrameLayout>-->
-
-            <!--        android:clipToPadding="false"-->
-
-            <!--        </androidx.core.widget.NestedScrollView>-->
 
             <com.google.android.material.bottomappbar.BottomAppBar
                 android:id="@+id/bottom_app_bar"
@@ -168,30 +137,6 @@
             app:menu="@menu/menu_drawer"
             >
 
-            <!--            <androidx.core.widget.NestedScrollView-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="match_parent"-->
-            <!--                >-->
-            <!--                <LinearLayout-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="match_parent"-->
-            <!--                    android:orientation="vertical">-->
-
-            <!--                    <androidx.recyclerview.widget.RecyclerView-->
-            <!--                        android:id="@+id/rv_nav_drawer"-->
-            <!--                        android:layout_width="match_parent"-->
-            <!--                        android:layout_height="match_parent"-->
-            <!--                        android:background="@color/white"-->
-            <!--                        android:nestedScrollingEnabled="false"-->
-            <!--                        tools:targetApi="lollipop"-->
-            <!--                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-            <!--                        android:orientation="vertical"-->
-            <!--                        tools:listitem="@layout/drawer_menu_item"-->
-            <!--                        />-->
-
-            <!--                </LinearLayout>-->
-
-            <!--            </androidx.core.widget.NestedScrollView>-->
 
         </com.google.android.material.navigation.NavigationView>
 

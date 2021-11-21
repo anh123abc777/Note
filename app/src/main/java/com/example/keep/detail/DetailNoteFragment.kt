@@ -93,10 +93,14 @@ class DetailNoteFragment : Fragment() {
 
         if(noteWithLabels==null){
 
-            val lastId = runBlocking {
-                withContext(Dispatchers.IO){
-                    repository.getLastNote().noteId+1
+            val lastId = try {
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        repository.getLastNote().noteId + 1
+                    }
                 }
+            }catch (e : Exception){
+                0
             }
 
             val firstPosition = runBlocking {
