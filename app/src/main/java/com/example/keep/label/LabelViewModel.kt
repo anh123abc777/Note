@@ -123,7 +123,10 @@ class LabelViewModel(private val noteIdsToLabel: IntArray?,
         notesToLabel.forEach { noteWithLabels ->
             runBlocking {
                 withContext(Dispatchers.IO) {
-                    noteRepository.removeLabelOnNote(noteWithLabels.note, label)
+                    try {
+                        noteRepository.removeLabelOnNote(noteWithLabels.note, label)
+                    }catch (e: NullPointerException){
+                    }
                 }
             }
         }

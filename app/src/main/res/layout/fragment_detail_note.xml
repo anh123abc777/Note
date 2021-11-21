@@ -55,10 +55,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
-                    android:orientation="vertical"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="1"
-                    tools:listitem="@layout/element_image" />
+                    tools:listitem="@layout/element_image"
+                    />
                 <!--                    app:reverseLayout="true"-->
 
                 <EditText
@@ -74,6 +72,19 @@
                 android:hint="@string/title"
                     android:text="@{viewModel.noteWithLabels.note.title}"
                     android:textSize="22sp" />
+
+                <EditText
+                    android:id="@+id/content"
+                    clickableWithStateNote="@{viewModel.noteWithLabels.note.state}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:background="@android:color/transparent"
+                    android:hint="content"
+                    android:textColor="#121212"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@{viewModel.noteWithLabels.note.content}"
+                    android:textSize="16sp" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/checkbox_group"
@@ -94,21 +105,9 @@
                     android:gravity="center"
                     android:onClick="@{() -> viewModel.addCheckbox()}"
                     android:src="@drawable/ic_baseline_add_24"
-                    app:tint="@color/black" />
+                    app:tint="@color/black"
+                    android:layout_marginBottom="8dp"/>
 
-                <EditText
-                    android:id="@+id/content"
-                    clickableWithStateNote="@{viewModel.noteWithLabels.note.state}"
-                    visibilityContent="@{viewModel.stateCheckBoxes}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:background="@android:color/transparent"
-                    android:hint="content"
-                    android:textColor="#121212"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@{viewModel.noteWithLabels.note.content}"
-                    android:textSize="16sp" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/labels"

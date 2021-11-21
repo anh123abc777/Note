@@ -25,9 +25,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.*
-import com.example.keep.R.*
 import com.example.keep.database.DataCheckboxes
 import com.example.keep.database.Note
 import com.example.keep.database.NoteDatabase
@@ -53,7 +51,6 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var navController: NavController
     private lateinit var binding : ActivityMainBinding
     private lateinit var viewModel: OverviewViewModel
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -64,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 
-        binding = DataBindingUtil.setContentView(this, layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         noteRepository = NoteRepository(NoteDatabase.getInstance(application).noteDao)
 
         val factory = OverviewViewModelFactory(this,application)
@@ -138,16 +135,12 @@ class MainActivity : AppCompatActivity() {
 //                findNavController().navigate(
 //                    OverviewFragmentDirections
 
+                clearView()
+                updateOrderNotes()
+
                 binding.view.visibility = View.VISIBLE
                 val fragment = DetailNoteFragment()
                 val args = Bundle()
-
-//                val lastId = runBlocking {
-//                    withContext(Dispatchers.IO){
-//                        noteRepository.getLastNote().noteId
-//                    }
-//                }
-
                 args.putInt("noteId", it)
 
                 fragment.arguments = args
@@ -159,9 +152,6 @@ class MainActivity : AppCompatActivity() {
                 ft.addToBackStack(null)
                 ft.commit()
 
-
-//                navController.navigate()
-                binding.navigationView.cancelPendingInputEvents()
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.START)
                 viewModel.doneNavigating()
             }
@@ -173,9 +163,8 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("WrongConstant")
     override fun onBackPressed() {
-        val count = supportFragmentManager.backStackEntryCount
 
-        when(count){
+        when(supportFragmentManager.backStackEntryCount){
             0 -> super.onBackPressed()
             2 -> {
                 supportFragmentManager.popBackStack()
@@ -316,7 +305,7 @@ class MainActivity : AppCompatActivity() {
 
         dialogViewBinding.time.setOnClickListener {
 
-            val timePicker = TimePickerDialog(this, { timePicker, selectedHour, selectedMinute ->
+            val timePicker = TimePickerDialog(this, { _, selectedHour, selectedMinute ->
                 dialogViewBinding.time.text = "$selectedHour:$selectedMinute"
                 hour=selectedHour
                 minute=selectedMinute
@@ -353,7 +342,7 @@ class MainActivity : AppCompatActivity() {
         alertDialog.setTitle("Add reminder")
         alertDialog.show()
 
-        var timeReminder = -1L
+        var timeReminder: Long
         dialogViewBinding.saveAction.setOnClickListener {
 
             val timeReminderString = mMonth.toString() +" "+ mDay.toString() +" "+  mYear.toString()+" " +
@@ -363,7 +352,7 @@ class MainActivity : AppCompatActivity() {
             timeReminder = date.time
             Toast.makeText(this,"current " +
                     "${SimpleDateFormat("MMM dd yyyy HH:mm").format(System.currentTimeMillis())}," +
-                    " time ${date}", Toast.LENGTH_LONG).show()
+                    " time $date", Toast.LENGTH_LONG).show()
             notes.forEach {
                 viewModel.sendNotification(it, timeReminder)
             }
@@ -378,7 +367,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        if(notes.size==1 && notes[0]!!.timeReminder!=0L) {
+        if(notes.size==1 && notes[0].timeReminder!=0L) {
             dialogViewBinding.deleteAction.visibility = View.VISIBLE
             dialogViewBinding.deleteAction.setOnClickListener {
                 viewModel.deleteReminder(notes[0])
@@ -485,7 +474,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setFunctionForLabelItemNavigationBar(){
         val menu = binding.navigationView.menu
-        viewModel.labels.observeForever() {
+        viewModel.labels.observeForever {
             if(it!=null) {
 
                 menu.getItem(1).subMenu.clear()
@@ -702,6 +691,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setUpToolbarWithArchiveNotes(){
         binding.hintSearch.text = "Archive"
         binding.hintSearch.isClickable = false
@@ -722,6 +712,7 @@ class MainActivity : AppCompatActivity() {
         params.scrollFlags = 0
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setUpToolbarWithTrashNotes(){
         binding.hintSearch.text = "Trash"
         binding.hintSearch.isClickable = false
@@ -742,6 +733,7 @@ class MainActivity : AppCompatActivity() {
         params.scrollFlags = 0
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setUpToolbarWithNormalNotes(){
         binding.hintSearch.text = "Search your notes"
         binding.hintSearch.isClickable = true
@@ -868,6 +860,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.clearView()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun addPin(){
         viewModel.addPin()
         Timber.i("success normalNotes ${viewModel.normalNotes.value}")
@@ -938,10 +931,11 @@ class MainActivity : AppCompatActivity() {
                     2, OrientationHelper.VERTICAL
                 ).apply {
                     gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+                    invalidateSpanAssignments()
                 }
+
                 binding.listItem.setHasFixedSize(true)
                 binding.listItem.layoutManager = layoutManager
-                binding.listItem.itemAnimator = DefaultItemAnimator()
 
             }
             else {
@@ -955,7 +949,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        updateOrderNotes2()
+        updateOrderNotes()
         clearView()
 //        var array = IntArray(2)
 //        array = (binding.listItem.layoutManager as StaggeredGridLayoutManager).findFirstCompletelyVisibleItemPositions(array)
@@ -978,7 +972,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    private fun updateOrderNotes2(){
+    private fun updateOrderNotes(){
         viewModel.normalNotes.value!!.forEachIndexed { index, noteWithLabels ->
             runBlocking {
                 withContext(Dispatchers.IO){

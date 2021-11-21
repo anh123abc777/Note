@@ -31,7 +31,9 @@ class DetailNoteViewModel(var noteWithLabels: NoteWithLabels,val repository: Not
 
 
     init {
+
         _stateCheckboxes.value = noteWithLabels.note.checkboxes.isNotEmpty()
+
     }
     fun addCheckbox(){
         noteWithLabels.note.checkboxes.add(DataCheckboxes(noteWithLabels.note.checkboxes.size,"",))
@@ -103,5 +105,9 @@ class DetailNoteViewModel(var noteWithLabels: NoteWithLabels,val repository: Not
 
     fun deleteReminder(){
         noteWithLabels.note.timeReminder = 0L
+    }
+
+    fun deleteImage(imageUri : String){
+        noteWithLabels.note.images.removeIf { it == imageUri }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.keep.search
 
 import android.app.Application
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,11 +9,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.keep.R
 import com.example.keep.adapter.FilterAdapter
 import com.example.keep.adapter.TypeFilter
 import com.example.keep.databinding.FragmentSearchBinding
+import com.example.keep.detail.DetailNoteFragment
 import com.example.keep.overview.NotesAdapter
 import com.example.keep.overview.OverviewViewModel
 import com.example.keep.overview.OverviewViewModelFactory
@@ -81,10 +85,24 @@ class SearchFragment : Fragment() {
     private fun observeNavigateToDetailView(){
         viewModel.noteNavigate.observe(viewLifecycleOwner){
             if(it!=null) {
-                findNavController().navigate(
-                    SearchFragmentDirections
-                        .actionSearchFragmentToDetailNoteFragment(it)
-                )
+                val fragment = DetailNoteFragment()
+                val args = Bundle()
+
+//                val lastId = runBlocking {
+//                    withContext(Dispatchers.IO){
+//                        noteRepository.getLastNote().noteId
+//                    }
+//                }
+
+                args.putInt("noteId", it)
+
+                fragment.arguments = args
+
+                val ft: FragmentTransaction = parentFragmentManager.beginTransaction()
+//                ft.setCustomAnimations(R.anim.zoom_in,R.anim.zoom_out)
+                ft.replace(R.id.view, fragment)
+                ft.addToBackStack(null)
+                ft.commit()
                 viewModel.doneNavigating()
             }
         }

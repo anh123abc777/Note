@@ -1,23 +1,24 @@
 package com.example.keep
 
-import android.content.res.Resources
 import android.graphics.Color
 import android.net.Uri
-import android.provider.MediaStore
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.*
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.keep.checkbox.CheckboxGroupAdapter
 import com.example.keep.database.*
-import com.example.keep.image.ImagesAdapter
+import com.example.keep.image.ImageAdapter
 import com.example.keep.label.LabelsInNoteIViewAdapter
 import com.example.keep.overview.NotesAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomappbar.BottomAppBar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 
 
@@ -31,7 +32,7 @@ fun bindRecyclerView(recyclerView: RecyclerView, data:List<Note>){
 @BindingAdapter("listDataImages")
 fun bindImagesRecyclerView(recyclerView: RecyclerView,data: ArrayList<String>?){
     if(!data.isNullOrEmpty()) {
-        val adapter = recyclerView.adapter as ImagesAdapter
+        val adapter = recyclerView.adapter as ImageAdapter
         adapter.submitList(data)
 //        if (data.isEmpty()) {
 //        }
@@ -39,13 +40,13 @@ fun bindImagesRecyclerView(recyclerView: RecyclerView,data: ArrayList<String>?){
     }else
         recyclerView.visibility = View.GONE
 
+
 }
 
 
 @BindingAdapter("listCheckboxes")
 fun bindCheckboxesRecyclerView(recyclerView: RecyclerView,data: List<DataCheckboxes>?){
     if (!data.isNullOrEmpty()) {
-        var temp = mutableMapOf<String,String>()
         val adapter = recyclerView.adapter as CheckboxGroupAdapter
 
         adapter.submitList(data)
@@ -53,7 +54,10 @@ fun bindCheckboxesRecyclerView(recyclerView: RecyclerView,data: List<DataCheckbo
     }else
         recyclerView.visibility = View.GONE
 
+//    limitHeightRecyclerview(recyclerView)
+
 }
+
 
 
 
@@ -80,22 +84,23 @@ fun bindLabelsRecyclerView(recyclerView: RecyclerView,data: List<Label>?,timeRem
 
 //@BindingAdapter("bindDataImages")
 //fun bindRecyclerViewImg(recyclerView: RecyclerView, data: List<Resource>){
-//    val adapter = recyclerView.adapter as ImagesAdapter
+//    val adapter = recyclerView.adapter as ImageAdapter
 //    adapter.submitList(data)
 //}
 
 @BindingAdapter(value = ["resourceImage","isOverview"])
 fun setResourceImage(imageView: ImageView, uri : Uri,isOverview: Boolean){
-    imageView.setImageURI(uri)
-    if (isOverview) {
-        val maxHeight = Resources.getSystem().displayMetrics.heightPixels / 3
-            if (imageView.height > maxHeight){
-                var params: ViewGroup.LayoutParams = imageView.layoutParams
-                params.height = maxHeight
-                imageView.layoutParams = params
-            }
 
-    }
+//            runBlocking {
+//                withContext(Dispatchers.IO) {
+////                    if (isOverview)
+//                        imageView.background =
+//                            Glide.with(imageView.context).load(uri).submit().get()
+//                    else
+                        imageView.setImageURI(uri)
+//
+//                }
+//            }
 }
 
 @BindingAdapter("setIcon")

@@ -31,12 +31,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 tools:listitem="@layout/element_image"
                 android:layout_marginBottom="4dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginTop="1dp"
                 listDataImages="@{noteWithLabels.note.images}"
-                android:clickable="false"
-                android:elevation="0dp"
+                android:elevation="-1dp"
                 android:clipToOutline="false"
                 android:background="@color/reply_blue_800"
                 />
@@ -52,9 +54,19 @@
                 android:textStyle="bold"
                 android:gravity="fill_horizontal"
                 android:text="@{noteWithLabels.note.title}"
-
                 android:textSize="18sp" />
-<!--            android:text="@{noteWithLabels.title}"-->
+
+            <TextView
+                android:id="@+id/content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="@{noteWithLabels.note.content}"
+                android:maxHeight="200dp"
+                android:textSize="14sp" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/checkbox_group"
                 android:layout_width="match_parent"
@@ -69,16 +81,6 @@
                 listCheckboxes="@{noteWithLabels.note.checkboxes}"
                 />
 
-            <TextView
-                android:id="@+id/content"
-                visibilityContent="@{noteWithLabels.note.checkboxes}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:fontFamily="sans-serif-medium"
-                android:text="@{noteWithLabels.note.content}"
-                android:textSize="14sp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/labels"

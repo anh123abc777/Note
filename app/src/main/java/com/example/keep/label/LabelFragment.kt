@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -104,6 +105,7 @@ class LabelFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        Timber.i("${viewModel.labels.value}")
         saveLabelNotes()
 
     }
@@ -154,10 +156,10 @@ class LabelFragment : Fragment() {
                     else -> Timber.i("nothing happens")
                 }
             }
-            Timber.i("on save label normalNotes")
 
         if(arguments?.getBoolean("isFromDetail") == true) {
             overViewModel.setUpLabelNavigate(listLabels)
+            Timber.i("${overViewModel.labelNavigate}")
         }
 
     }

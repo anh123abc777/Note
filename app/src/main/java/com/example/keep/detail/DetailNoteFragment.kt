@@ -15,25 +15,24 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.forEach
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.keep.R
+import com.example.keep.adapter.ImageGridAdapter
 import com.example.keep.checkbox.CheckboxGroupAdapter
 import com.example.keep.database.*
 import com.example.keep.databinding.DateTimePickerBinding
 import com.example.keep.databinding.FragmentDetailNoteBinding
 import com.example.keep.databinding.FunctionEditContentNoteBottomSheetLayoutBinding
 import com.example.keep.databinding.FunctionSettingNoteBottomSheetLayoutBinding
-import com.example.keep.image.ImagesAdapter
+import com.example.keep.image.ImageAdapter
 import com.example.keep.label.LabelFragment
 import com.example.keep.label.LabelsInNoteIViewAdapter
 import com.example.keep.overview.OverviewViewModel
 import com.example.keep.overview.OverviewViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -43,7 +42,6 @@ import java.io.IOException
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.NullPointerException
 
 //
 
@@ -53,7 +51,7 @@ class DetailNoteFragment : Fragment() {
     private lateinit var viewModel : DetailNoteViewModel
     private lateinit var repository: NoteRepository
     private lateinit var checkboxesAdapter: CheckboxGroupAdapter
-    private lateinit var imageAdapter: ImagesAdapter
+    private lateinit var imageAdapter: ImageGridAdapter
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private lateinit var application: Application
     private var noteId: Int = 0
@@ -116,33 +114,21 @@ class DetailNoteFragment : Fragment() {
             }
         }
 
+        Timber.i("${overviewModel.labelNavigate}  $noteWithLabels")
+
 
         val factory = DetailNoteViewModelFactory(noteWithLabels,repository)
-        viewModel = ViewModelProvider(this,factory).get(DetailNoteViewModel::class.java)
+        viewModel = ViewModelProvider(viewModelStore,factory).get(DetailNoteViewModel::class.java)
+        viewModel.noteWithLabels = noteWithLabels
         application = requireNotNull(activity).application
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        imageAdapter = ImagesAdapter()
-        binding.imageList.adapter = imageAdapter
-
-
-        if (noteWithLabels?.note.images!!.isNotEmpty()) {
-            imageAdapter.submitList(noteWithLabels.note.images)
-
-//            binding.root.post {
-//                val maxHeight = binding.root.height / 4
-//                Timber.i(" max height ${maxHeight}")
-//                binding.imageList.post {
-//                    Timber.i(" max height ${binding.imageList.height}")
-//                        val params: ViewGroup.LayoutParams = binding.imageList.layoutParams
-//                        params.height = maxHeight
-//                        binding.imageList.layoutParams = params
-//
-//                }
-//
-//            }
-        }
+        imageAdapter =
+            ImageGridAdapter(canEdit = true, ImageAdapter.OnClickListener { imageUri, position ->
+                viewModel!!.deleteImage(imageUri)
+                imageAdapter.submitList(viewModel.noteWithLabels.note.images)
+            })
 
         checkboxesAdapter = CheckboxGroupAdapter(CheckboxGroupAdapter.OnClickListener {dataCheckbox,pos,removeOrEdit ->
             when(removeOrEdit){
@@ -535,7 +521,6 @@ class DetailNoteFragment : Fragment() {
                             )
                         )
                     }
-                    Timber.i("checkbox list ${list}")
                     checkboxes.clear()
                     checkboxes.addAll(list)
 
@@ -545,18 +530,21 @@ class DetailNoteFragment : Fragment() {
                         if(content.isNotEmpty() || checkboxes.isNotEmpty() ||
                             (checkboxes.isNotEmpty() && !(checkboxes.size == 1 && checkboxes[0].text == "")) ||
                             title.isNotEmpty() || images.isNotEmpty() || viewModel.navigateToLabel){
-
+                                Timber.i("${content.isNotEmpty()} ${ checkboxes.isNotEmpty()} " +
+                                        "${(checkboxes.isNotEmpty() && !(checkboxes.size == 1 && checkboxes[0].text == ""))}" +
+                                        " ${title.isNotEmpty()} ${images.isNotEmpty()} ${ checkboxes.isNotEmpty()}")
                                 repository.insert(currentNote)
 
+                            viewModel.noteWithLabels.labels?.forEach {
+                                repository.addLabelToNote(currentNote, it)
+                            }
                         } else{
                             isEmptyNote = true
                         }
 
                     }
                 }
-                viewModel.noteWithLabels.labels?.forEach {
-                    repository.addLabelToNote(currentNote, it)
-                }
+
             }
         }
         overviewModel.emptyNoteDiscarded.value = isEmptyNote
@@ -564,6 +552,20 @@ class DetailNoteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.run {
+
+
+            imageList.adapter = imageAdapter
+
+//            if (noteWithLabels?.note.images!!.isNotEmpty()) {
+            imageAdapter.submitList(noteWithLabels.note.images)
+            imageList.layoutManager = GridLayoutManager(requireContext(), 3).apply {
+                spanSizeLookup = imageAdapter.variableSpanSizeLookup
+            }
+//            }
+        }
+
 //        overviewModel.createNotificationChannel()
     }
 

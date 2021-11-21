@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:text="@{label.labelName}"
             android:textSize="14sp"
-            android:background="@drawable/border"
+            android:background="@drawable/label_border"
             android:layout_margin="4dp"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"

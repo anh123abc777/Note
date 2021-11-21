@@ -11,22 +11,15 @@ import android.widget.Toast
 import androidx.core.view.allViews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.paging.PagingDataAdapter
-import androidx.paging.PagingSource
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.*
 import com.example.keep.checkbox.CheckboxGroupAdapter
 import com.example.keep.database.*
 import com.example.keep.databinding.ElementNoteBinding
 import com.example.keep.databinding.HeaderBinding
-import com.example.keep.image.ImagesAdapter
+import com.example.keep.image.ImageAdapter
 import com.example.keep.label.LabelsInNoteIViewAdapter
 import kotlinx.coroutines.*
 import timber.log.Timber
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 
 
 private val ITEM_VIEW_TYPE_HEADER = 0
@@ -92,11 +85,6 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
             binding.root.post {
             val maxHeight = Resources.getSystem().displayMetrics.heightPixels/3
 
-                binding.content.post {
-                    if (binding.content.height > maxHeight)
-                        binding.content.height = maxHeight
-                }
-
 
                 binding.checkboxGroup.post {
                     if(binding.checkboxGroup.height > maxHeight) {
@@ -107,12 +95,13 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
                 }
 
                 binding.images.post {
+                    val params: ViewGroup.LayoutParams = binding.images.layoutParams
                     if (binding.images.height > maxHeight) {
-                        val params: ViewGroup.LayoutParams = binding.images.layoutParams
                         params.height = maxHeight
                         binding.images.layoutParams = params
                     }
                 }
+//
             }
         }
 
@@ -124,8 +113,10 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
 //
         private fun setAdapterImgView(note: NoteWithLabels){
 //            if (note.note.images!!.isNotEmpty()) {
-                val adapter = ImagesAdapter()
+                val adapter = ImageAdapter(false,ImageAdapter.OnClickListener{ _, _ ->  })
                 binding.images.adapter = adapter
+                binding.images.setHasFixedSize(false)
+
 //                adapter.submitList(note.note.images)
 //            }
         }
@@ -133,12 +124,16 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
         private fun setAdapterLabel(note: NoteWithLabels){
             val adapter = LabelsInNoteIViewAdapter()
             binding.labels.adapter = adapter
+            binding.labels.setHasFixedSize(false)
         }
 //
         private fun setAdapterCheckboxGroup(note: NoteWithLabels){
 //            if(note.note.checkboxes!!.isNotEmpty()){
                 val adapter = CheckboxGroupAdapter(clickListener = null,false)
                 binding.checkboxGroup.adapter = adapter
+                binding.checkboxGroup.apply {
+                   setHasFixedSize(false)
+                }
 //                binding.content.visibility = View.GONE
 
 //                var dataCheckboxes = mutableListOf<CheckboxGroupAdapter.DataCheckboxes>()

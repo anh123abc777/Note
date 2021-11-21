@@ -2,20 +2,18 @@ package com.example.keep.checkbox
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.res.ResourcesCompat
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.keep.R
 import com.example.keep.database.DataCheckboxes
 import com.example.keep.databinding.ElementCheckboxBinding
-import kotlinx.coroutines.currentCoroutineContext
 import timber.log.Timber
 
 private val REMOVE = 0
@@ -51,6 +49,18 @@ class CheckboxGroupAdapter(private val clickListener: OnClickListener?, private 
                     clickListener?.onClick(dataCheckboxes,position, EDIT)
                 }
             }
+
+            binding.elementCheckbox.setOnCheckedChangeListener { _, isChecked ->
+
+                binding.textCheckbox.paintFlags = if (isChecked)
+                    Paint.STRIKE_THRU_TEXT_FLAG
+                else
+                    0
+
+                Toast.makeText(binding.root.context,"click checkbox ",Toast.LENGTH_SHORT).show()
+
+            }
+
             binding.deleteCheckbox.setOnClickListener {
                 clickListener?.onClick(dataCheckboxes,position,REMOVE)
                 Timber.i("on click")
