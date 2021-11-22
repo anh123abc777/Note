@@ -14,6 +14,8 @@ class LabelSettingViewModel(application: Application): ViewModel() {
     private val labelRepository =LabelRepository(NoteDatabase.getInstance(application).labelDao)
     val allLabels =   labelRepository.allLabels
 
+    private var labelsWillBeRemove = mutableListOf<Label>()
+
     private val job = Job()
     private val coroutineScope = CoroutineScope(Job() + Dispatchers.Main)
 
@@ -37,12 +39,18 @@ class LabelSettingViewModel(application: Application): ViewModel() {
         allLabels.value!!.add(Label(lastId,labelName))
     }
 
-    fun removeLabel(index: Int){
-//        allLabels.value!!.removeIf { it.labelId==labelId }
-        coroutineScope.launch (Dispatchers.IO){
-            labelRepository.remove(allLabels.value!![index])
-        }
-        Timber.i("done remove ${index}")
+    fun removeLabel(label: Label){
+        val labelWillBeRemove = allLabels.value?.find { it==label }
+
+        labelWillBeRemove?.let { labelsWillBeRemove.add(it) }
+
+        allLabels.value?.remove(label)
+
+
+//        runBlocking(Dispatchers.IO){
+//            labelWillBeRemove?.let { labelRepository.remove(it) }
+//        }
+
     }
 
     fun updateLabel(label: Label){
@@ -53,10 +61,14 @@ class LabelSettingViewModel(application: Application): ViewModel() {
 
     fun saveData(){
         allLabels.value!!.forEach {
-            runBlocking{
-                withContext(Dispatchers.IO) {
+            runBlocking(Dispatchers.IO){
                     labelRepository.insert(it)
-                }
+            }
+        }
+
+        labelsWillBeRemove.forEach {
+            runBlocking(Dispatchers.IO){
+                labelRepository.remove(it)
             }
         }
     }

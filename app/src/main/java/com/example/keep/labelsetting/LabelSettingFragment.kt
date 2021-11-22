@@ -43,23 +43,27 @@ class LabelSettingFragment : Fragment() {
         adapter = LabelSettingAdapter(LabelSettingAdapter.OnClickListener{label, pos,signal ->
             when(signal){
                 "delete" -> {
-                    viewModel.removeLabel(pos)
-                    adapter.notifyItemRemoved(pos)
-                    Toast.makeText(context,"delete ${pos}",Toast.LENGTH_SHORT).show()
+                    adapter.notifyItemRemoved(viewModel.allLabels.value!!.indexOf(label))
+                    viewModel.removeLabel(label)
+                    Toast.makeText(context,"delete ${label}  ${viewModel.allLabels.value}",Toast.LENGTH_SHORT).show()
                 }
 
                 "update" -> {
 //                    viewModel.updateLabel(label)
-                    Toast.makeText(context,"update ${label}",Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(context,"update ${label}",Toast.LENGTH_SHORT).show()
 
                 }
+
                 else -> Timber.i("have problem")
             }
         })
 
         viewModel.allLabels.observe(viewLifecycleOwner){
-            adapter.submitList(it)
+                adapter.submitList(it)
+
         }
+
+
 
         binding.listLabel.adapter = adapter
 

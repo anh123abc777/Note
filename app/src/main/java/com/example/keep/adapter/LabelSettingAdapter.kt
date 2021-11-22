@@ -33,15 +33,6 @@ class LabelSettingAdapter(private val clickListener : OnClickListener) : ListAda
         fun bind(label: Label, position: Int, clickListener: OnClickListener){
             binding.label = label
 
-//            if (label.labelId== Int.MIN_VALUE){
-//                binding.startButton.setImageResource(R.drawable.ic_baseline_add_black_24)
-//
-//                binding.endButton.setImageResource(R.drawable.ic_baseline_check_black_24)
-//                binding.endButton.visibility = View.INVISIBLE
-//                binding.labelNameView.hint = "new label"
-//                binding.labelNameView.requestFocus()
-//
-//            }
             Timber.i("label ${label}")
             when(label.labelId){
                 Int.MAX_VALUE -> {
@@ -58,8 +49,8 @@ class LabelSettingAdapter(private val clickListener : OnClickListener) : ListAda
 
             }
 
-            binding.labelNameView.setOnFocusChangeListener { view, isfocus ->
-                if(isfocus){
+            binding.labelNameView.setOnFocusChangeListener { _, isFocus ->
+                if(isFocus){
 
                             binding.startButton.setImageResource(R.drawable.ic_baseline_delete_outline_24)
                             binding.endButton.setImageResource(R.drawable.ic_baseline_check_24)
@@ -135,7 +126,6 @@ class LabelSettingAdapter(private val clickListener : OnClickListener) : ListAda
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Timber.i("bind ${getItem(position)}")
         holder.bind(getItem(position),position,clickListener)
     }
 
