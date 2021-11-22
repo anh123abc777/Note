@@ -65,7 +65,9 @@
                 android:fontFamily="sans-serif-medium"
                 android:text="@{noteWithLabels.note.content}"
                 android:maxHeight="200dp"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                visibilityContent="@{noteWithLabels.note.content}"
+                />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/checkbox_group"

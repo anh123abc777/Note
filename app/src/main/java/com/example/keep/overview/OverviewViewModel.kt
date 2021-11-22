@@ -1,32 +1,22 @@
 package com.example.keep.overview
 
-import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
-import android.view.View
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
-import androidx.paging.liveData
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.keep.R
 import com.example.keep.adapter.DataFilterAdapter
 import com.example.keep.database.*
-import com.example.keep.databinding.DateTimePickerBinding
 import com.example.keep.notification.ReminderBroadcast
 import kotlinx.coroutines.*
 import timber.log.Timber
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -311,25 +301,30 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
         }
     }
 
-    fun makeACopy(note: Note? =null){
-        val noteCopy: Note = if(note==null && _notesSelected.value!!.size==1){
-            _notesSelected.value!![0].note
+    fun makeACopy(note: NoteWithLabels? =null){
+        val notesCopy: MutableList<NoteWithLabels> = if(note==null){
+            _notesSelected.value!!
         }else{
-            note!!
+            mutableListOf(note)
         }
-        if(noteCopy!=null){
 
+        notesCopy.forEach { noteCopy ->
             val newId = runBlocking {
-                withContext(Dispatchers.IO){
-                    repository.getLastNote().noteId+1
+                withContext(Dispatchers.IO) {
+                    repository.getLastNote().noteId + 1
                 }
             }
 
-            noteCopy.noteId = newId
+            noteCopy.note.noteId = newId
 
-            coroutineScope.launch(Dispatchers.IO) {
-                repository.insert(noteCopy)
-            }
+           runBlocking {
+               withContext(Dispatchers.IO) {
+                   repository.insert(noteCopy.note)
+                   noteCopy.labels?.forEach { label ->
+                       repository.addLabelToNote(noteCopy.note, label)
+                   }
+               }
+           }
         }
     }
 

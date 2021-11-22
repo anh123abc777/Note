@@ -195,7 +195,6 @@ class MainActivity : AppCompatActivity() {
             it?.let {
                 if (viewModel.currentNotesInView.value== 0) {
                     adapter.addHeaderAndSubmitList(it)
-                    Toast.makeText(this,"${it}",Toast.LENGTH_SHORT).show()
                 }
                 adapter.initNotes(it)
 
@@ -331,9 +330,7 @@ class MainActivity : AppCompatActivity() {
 
                     dialogViewBinding.date.text = desiredFormat
 
-                    mYear=year
-                    mMonth=monthOfYear + 1
-                    mDay = dayOfMonth
+
                 }, mYear, mMonth, mDay
             )
             datePickerDialog.show()
@@ -346,14 +343,14 @@ class MainActivity : AppCompatActivity() {
         var timeReminder: Long
         dialogViewBinding.saveAction.setOnClickListener {
 
-            val timeReminderString = mMonth.toString() +" "+ mDay.toString() +" "+  mYear.toString()+" " +
+            val timeReminderString = (mMonth+1).toString() +" "+ mDay.toString() +" "+  mYear.toString()+" " +
                     hour.toString()+ ":" + minute.toString()
             val formatter = SimpleDateFormat("MM dd yyyy HH:mm")
             val date = formatter.parse(timeReminderString)
             timeReminder = date.time
             Toast.makeText(this,"current " +
-                    "${SimpleDateFormat("MMM dd yyyy HH:mm").format(System.currentTimeMillis())}," +
-                    " time $date", Toast.LENGTH_LONG).show()
+                    "${SimpleDateFormat("MM dd yyyy HH:mm").format(System.currentTimeMillis())}," +
+                    " time $timeReminderString", Toast.LENGTH_LONG).show()
             notes.forEach {
                 viewModel.sendNotification(it, timeReminder)
             }
@@ -805,7 +802,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.notification -> {
 //                    viewModel.showDateTimePicker( viewModel.notesSelected.value!!.map { it.note },layoutInflater)
                     showDateTimePicker( viewModel.notesSelected.value!!.map { it.note })
-
                 }
 
                 R.id.delete -> {
@@ -865,7 +861,6 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun addPin(){
         viewModel.addPin()
-        Timber.i("success normalNotes ${viewModel.normalNotes.value}")
         viewModel.clearView()
 
         if (viewModel.currentNotesInView.value==ARCHIVE){
@@ -873,8 +868,7 @@ class MainActivity : AppCompatActivity() {
         }else
             adapter.addHeaderAndSubmitList(viewModel.normalNotes.value)
 
-        adapter.notifyDataSetChanged()
-        Timber.i("done add Pin")
+        adapter.notifyItemChanged(1)
     }
 
 

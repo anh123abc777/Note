@@ -271,9 +271,7 @@ class DetailNoteFragment : Fragment() {
 
                     dialogViewBinding.date.text = desiredFormat
 
-                    mYear=year
-                    mMonth=monthOfYear + 1
-                    mDay = dayOfMonth
+
                 }, mYear, mMonth, mDay
             )
             datePickerDialog.show()
@@ -286,14 +284,12 @@ class DetailNoteFragment : Fragment() {
         var timeReminder = -1L
         dialogViewBinding.saveAction.setOnClickListener {
 
-            val timeReminderString = mMonth.toString() +" "+ mDay.toString() +" "+  mYear.toString()+" " +
+            val timeReminderString = (mMonth+1).toString() +" "+ mDay.toString() +" "+  mYear.toString()+" " +
                     hour.toString()+ ":" + minute.toString()
             val formatter = SimpleDateFormat("MM dd yyyy HH:mm")
             val date = formatter.parse(timeReminderString)
             timeReminder = date.time
-            Toast.makeText(requireContext(),"current " +
-                    "${SimpleDateFormat("MMM dd yyyy HH:mm").format(System.currentTimeMillis())}," +
-                    " time ${date}",Toast.LENGTH_LONG).show()
+
             notes.forEach {
                 overviewModel.sendNotification(it, timeReminder)
                 viewModel.addReminder(timeReminder)
@@ -475,7 +471,7 @@ class DetailNoteFragment : Fragment() {
     }
 
     private fun makeACopy(){
-        overviewModel.makeACopy(noteWithLabels.note)
+        overviewModel.makeACopy(noteWithLabels)
         requireActivity().onBackPressed()
     }
 

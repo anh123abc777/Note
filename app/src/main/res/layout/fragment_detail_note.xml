@@ -98,6 +98,7 @@
                 <ImageButton
                     android:id="@+id/add_check_box"
                     visibilityButtonAdd="@{viewModel.stateCheckBoxes}"
+                    stateNote="@{viewModel.noteWithLabels.note.state}"
                     android:layout_width="80dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center_horizontal"

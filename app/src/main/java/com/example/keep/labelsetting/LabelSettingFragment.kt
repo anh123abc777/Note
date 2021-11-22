@@ -124,9 +124,11 @@ class LabelSettingFragment : Fragment() {
 
     private fun setUpFunctionEndButton() {
         binding.frameAddItemLabel.endButton.setOnClickListener {
-            viewModel.addLabel(binding.frameAddItemLabel.labelNameView.text.toString())
-            binding.frameAddItemLabel.labelNameView.text.clear()
-            adapter.notifyItemInserted(viewModel.allLabels.value!!.size+1)
+            if(binding.frameAddItemLabel.labelNameView.text.toString()!="") {
+                viewModel.addLabel(binding.frameAddItemLabel.labelNameView.text.toString())
+                binding.frameAddItemLabel.labelNameView.text.clear()
+                adapter.notifyItemInserted(viewModel.allLabels.value!!.size + 1)
+            }
         }
     }
 

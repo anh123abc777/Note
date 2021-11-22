@@ -113,15 +113,18 @@ fun setVisibilityContent(textView: TextView,boolean: Boolean){
     textView.visibility= if(boolean) View.GONE else View.VISIBLE
 }
 
-@BindingAdapter("visibilityButtonAdd")
-fun setVisibilityButtonAdd(imageButton: ImageButton,boolean: Boolean){
-    imageButton.visibility = if(boolean) View.VISIBLE else View.GONE
+@BindingAdapter(value = ["visibilityButtonAdd","stateNote"])
+fun setVisibilityButtonAdd(imageButton: ImageButton,boolean: Boolean,stateNote : Int){
+    imageButton.visibility = if(boolean && stateNote!=-1) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("visibilityContent")
-fun setVisibilityContent(textView: TextView,checkboxGroup : List<DataCheckboxes>?){
-    textView.visibility= if(checkboxGroup.isNullOrEmpty()) View.VISIBLE else View.GONE
+fun setVisibilityContent(textView: TextView,content : String?){
+    textView.visibility= if(!content.isNullOrBlank()) View.VISIBLE else View.GONE
 }
+//List<DataCheckboxes>?
+//    textView.visibility= if(checkboxGroup.isNullOrEmpty()) View.VISIBLE else View.GONE
+
 //
 //@BindingAdapter("visibilityButtonAdd")
 //fun setVisibilityButtonAdd(imageButton: ImageButton,checkboxes : ArrayList<String>?){

@@ -230,7 +230,7 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
                 null -> listOf(DataItem.Header("other"))
                 else -> if(list.any { (it.note.priority == 1) }) {
 
-                            listOf(DataItem.Header("pin")) +
+                            listOf(DataItem.Header("pinned")) +
 
                             list.filter {
                                 it.note.priority == 1
