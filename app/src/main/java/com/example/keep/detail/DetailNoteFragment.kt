@@ -50,8 +50,9 @@ class DetailNoteFragment : Fragment() {
     private lateinit var binding : FragmentDetailNoteBinding
     private lateinit var viewModel : DetailNoteViewModel
     private lateinit var repository: NoteRepository
-    private lateinit var checkboxesAdapter: CheckboxGroupAdapter
+    private lateinit var checkboxAdapter: CheckboxGroupAdapter
     private lateinit var imageAdapter: ImageGridAdapter
+    private lateinit var labelAdapter: LabelsInNoteIViewAdapter
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private lateinit var application: Application
     private var noteId: Int = 0
@@ -123,7 +124,7 @@ class DetailNoteFragment : Fragment() {
 
         val factory = DetailNoteViewModelFactory(noteWithLabels,repository)
         viewModel = ViewModelProvider(viewModelStore,factory).get(DetailNoteViewModel::class.java)
-        viewModel.noteWithLabels = noteWithLabels
+        viewModel.setNoteWithLabelValue(noteWithLabels)
         application = requireNotNull(activity).application
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
@@ -131,48 +132,47 @@ class DetailNoteFragment : Fragment() {
         imageAdapter =
             ImageGridAdapter(canEdit = true, ImageAdapter.OnClickListener { imageUri, position ->
                 viewModel!!.deleteImage(imageUri)
-                imageAdapter.submitList(viewModel.noteWithLabels.note.images)
+                imageAdapter.submitList(viewModel.noteWithLabels.value!!.note.images)
             })
 
-        checkboxesAdapter = CheckboxGroupAdapter(CheckboxGroupAdapter.OnClickListener {dataCheckbox,pos,removeOrEdit ->
+        checkboxAdapter = CheckboxGroupAdapter(CheckboxGroupAdapter.OnClickListener { dataCheckbox, pos, removeOrEdit ->
             when(removeOrEdit){
                 REMOVE -> {
                     viewModel.removeCheckbox(dataCheckbox.id)
-                    checkboxesAdapter.notifyItemRemoved(pos)
+                    checkboxAdapter.notifyItemRemoved(pos)
                 }
 
                 else -> {
                     viewModel.updateCheckbox(dataCheckbox)
-                    checkboxesAdapter.notifyItemChanged(pos)
+                    checkboxAdapter.notifyItemChanged(pos)
                 }
             }
 
         },true)
 
-        binding.checkboxGroup.adapter = checkboxesAdapter
+        binding.checkboxGroup.adapter = checkboxAdapter
 
 
-        val labelsAdapter = LabelsInNoteIViewAdapter()
-        binding.labels.adapter = labelsAdapter
 //            adapter.submitList(noteWithLabels.labels)
 
 
         viewModel.addButtonClicked.observe(viewLifecycleOwner){
             if(it){
-                checkboxesAdapter.notifyItemInserted(noteWithLabels.note.checkboxes.size +1)
+                checkboxAdapter.notifyItemInserted(noteWithLabels.note.checkboxes.size +1)
                 viewModel.addCheckboxDone()
             }
         }
 
         viewModel.stateCheckBoxes.observe(viewLifecycleOwner){
             if(it){
-                checkboxesAdapter.submitList(viewModel.noteWithLabels.note.checkboxes)
+                checkboxAdapter.submitList(viewModel.noteWithLabels.value!!.note.checkboxes)
                 binding.checkboxGroup.visibility = View.VISIBLE
             }
         }
 
         setUpBottomAppbar()
         setUpAppbar()
+        bindLabelsRecyclerView()
 
         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
             if(result.resultCode == Activity.RESULT_OK){
@@ -186,8 +186,8 @@ class DetailNoteFragment : Fragment() {
                     // Check for the freshest data.
                     contentResolver.takePersistableUriPermission(data!!.toUri(), takeFlags)
                     viewModel.addImage(data)
-                    imageAdapter.submitList(viewModel.noteWithLabels.note.images)
-                    Timber.i("images ${viewModel.noteWithLabels.note.images}")
+                    imageAdapter.submitList(viewModel.noteWithLabels.value!!.note.images)
+                    Timber.i("images ${viewModel.noteWithLabels.value!!.note.images}")
                     imageAdapter.notifyDataSetChanged()
                 }
 
@@ -197,8 +197,38 @@ class DetailNoteFragment : Fragment() {
         return binding.root
     }
 
-    companion object {
-        const val TAG = "DetailNoteFragment"
+    @SuppressLint("SimpleDateFormat")
+    private fun bindLabelsRecyclerView(){
+
+        labelAdapter = LabelsInNoteIViewAdapter()
+        binding.labels.adapter = labelAdapter
+
+        viewModel.noteWithLabels.observe(viewLifecycleOwner) {
+
+            var list = mutableListOf<Label>()
+
+            if (it.note.timeReminder != 0L) {
+                list.add(
+                    Label(
+                        Int.MIN_VALUE, SimpleDateFormat("MMM dd, HH:mm")
+                            .format(it.note.timeReminder).toString()
+                    )
+                )
+            }
+            if (!it.labels.isNullOrEmpty()) {
+                list.addAll(it.labels!!)
+            }
+
+            if (list.isNotEmpty()) {
+                labelAdapter.submitList(list)
+                Toast.makeText(context,"labels ${list}",Toast.LENGTH_SHORT).show()
+                binding.labels.visibility = View.VISIBLE
+            } else
+                binding.labels.visibility = View.GONE
+
+            labelAdapter.notifyDataSetChanged()
+        }
+
     }
 
     private fun setUpAppbar(){
@@ -206,12 +236,12 @@ class DetailNoteFragment : Fragment() {
             when(menuItem.itemId){
                 R.id.pin -> {
                     viewModel.addPin()
-                    if (viewModel.noteWithLabels.note.priority==1){
+                    if (viewModel.noteWithLabels.value!!.note.priority==1){
                         menuItem.setIcon(R.drawable.ic_pinned)
                     } else
                         menuItem.setIcon(R.drawable.ic_pin)
                 }
-                else -> showDateTimePicker(listOf(viewModel.noteWithLabels.note))
+                else -> showDateTimePicker(listOf(viewModel.noteWithLabels.value!!.note))
             }
             true
         }
@@ -310,7 +340,7 @@ class DetailNoteFragment : Fragment() {
         if(notes.size==1 && notes[0]!!.timeReminder!=0L) {
             dialogViewBinding.deleteAction.visibility = View.VISIBLE
             dialogViewBinding.deleteAction.setOnClickListener {
-                notifyNoteOfNewReminder(timeReminder,notes)
+                notifyNoteOfNewReminder(0L,notes)
                 alertDialog.hide()
                 overviewModel.clearView()
             }
@@ -318,6 +348,7 @@ class DetailNoteFragment : Fragment() {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun notifyNoteOfNewReminder(timeReminder: Long, notes : List<Note>){
 
         notes.forEach { note ->
@@ -333,7 +364,7 @@ class DetailNoteFragment : Fragment() {
 
             runBlocking(Dispatchers.IO){
                 notesUpdateReminder?.timeReminder = timeReminder
-                notesUpdateReminder?.let { repository.update(it) }
+//                notesUpdateReminder?.let { repository.update(it) }
                 viewModel.addReminder(timeReminder)
             }
 //
@@ -545,7 +576,7 @@ class DetailNoteFragment : Fragment() {
         var isEmptyNote = false
         runBlocking {
             withContext(Dispatchers.IO) {
-                val currentNote = viewModel.noteWithLabels.note
+                val currentNote = viewModel.noteWithLabels.value!!.note
                 currentNote?.apply {
                     title = binding.title.text.toString()
                     content = binding.content.text.toString()
@@ -583,7 +614,7 @@ class DetailNoteFragment : Fragment() {
                                         " ${title.isNotEmpty()} ${images.isNotEmpty()} ${ checkboxes.isNotEmpty()}")
                                 repository.insert(currentNote)
 
-                            viewModel.noteWithLabels.labels?.forEach {
+                            viewModel.noteWithLabels.value?.labels?.forEach {
                                 repository.addLabelToNote(currentNote, it)
                             }
                         } else{

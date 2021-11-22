@@ -15,8 +15,11 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class DetailNoteViewModel(var noteWithLabels: NoteWithLabels,val repository: NoteRepository) : ViewModel() {
+class DetailNoteViewModel(private val note: NoteWithLabels,val repository: NoteRepository) : ViewModel() {
 
+    private var _noteWithLabels = MutableLiveData<NoteWithLabels>()
+    val noteWithLabels : LiveData<NoteWithLabels>
+        get() = _noteWithLabels
 
     private var _addButtonClicked = MutableLiveData<Boolean>()
     val addButtonClicked : LiveData<Boolean>
@@ -26,18 +29,21 @@ class DetailNoteViewModel(var noteWithLabels: NoteWithLabels,val repository: Not
     val stateCheckBoxes : LiveData<Boolean>
         get() = _stateCheckboxes
 
-     val timeEditedString = convertLongToDateString(noteWithLabels.note.timeEdited)
+     val timeEditedString = noteWithLabels.value?.note?.timeEdited?.let { convertLongToDateString(it) }
     var navigateToLabel = false
 
 
     init {
-
-        _stateCheckboxes.value = noteWithLabels.note.checkboxes.isNotEmpty()
-
+        _noteWithLabels.value = note
+        _stateCheckboxes.value = noteWithLabels.value!!.note.checkboxes.isNotEmpty()
     }
+
+    fun setNoteWithLabelValue(noteWithLabels: NoteWithLabels){
+        _noteWithLabels.value = noteWithLabels
+    }
+
     fun addCheckbox(){
-        noteWithLabels.note.checkboxes.add(DataCheckboxes(noteWithLabels.note.checkboxes.size,"",))
-        Timber.i("checkbox ${noteWithLabels.note.checkboxes}")
+        noteWithLabels.value!!.note.checkboxes.add(DataCheckboxes(noteWithLabels.value!!.note.checkboxes.size,"",))
         _addButtonClicked.value = true
     }
 
@@ -46,13 +52,13 @@ class DetailNoteViewModel(var noteWithLabels: NoteWithLabels,val repository: Not
     }
 
     fun updateCheckbox(dataCheckbox: DataCheckboxes){
-        noteWithLabels.note.checkboxes.find { it.id == dataCheckbox.id }.apply {
+        _noteWithLabels.value!!.note.checkboxes.find { it.id == dataCheckbox.id }.apply {
             this!!.text = dataCheckbox.text
         }
     }
 
     fun removeCheckbox(id : Int){
-        noteWithLabels.note.checkboxes.removeIf { it.id == id }
+        _noteWithLabels.value!!.note.checkboxes.removeIf { it.id == id }
     }
 
     fun getIntentLibrary() : Intent {
@@ -75,10 +81,10 @@ class DetailNoteViewModel(var noteWithLabels: NoteWithLabels,val repository: Not
     private var imageUri : String? = null
 
     fun addImage(uriImage: String=imageUri!!){
-        noteWithLabels.note.images.add(uriImage)
+        noteWithLabels.value!!.note.images.add(uriImage)
         runBlocking {
             withContext(Dispatchers.IO){
-                repository.update(noteWithLabels.note)
+                repository.update(noteWithLabels.value!!.note)
             }
         }
     }
@@ -90,24 +96,27 @@ class DetailNoteViewModel(var noteWithLabels: NoteWithLabels,val repository: Not
     fun addCheckboxes(){
 //        noteWithLabels.note.checkboxes!!.add("")
 
-        noteWithLabels.note.checkboxes.add(DataCheckboxes(noteWithLabels.note.checkboxes.size,"",))
+        _noteWithLabels.value!!.note.checkboxes.add(DataCheckboxes(noteWithLabels.value!!.note.checkboxes.size,"",))
 
         _stateCheckboxes.value = true
     }
 
     fun addPin() {
-        noteWithLabels.note.priority= if(noteWithLabels.note.priority==1) 0 else 1
+        _noteWithLabels.value!!.note.priority= if(noteWithLabels.value!!.note.priority==1) 0 else 1
     }
 
     fun addReminder(time: Long){
-        noteWithLabels.note.timeReminder = time
+        _noteWithLabels.value!!.note.timeReminder = time
+        _noteWithLabels.postValue(
+            _noteWithLabels.value
+        )
     }
 
     fun deleteReminder(){
-        noteWithLabels.note.timeReminder = 0L
+        noteWithLabels.value!!.note.timeReminder = 0L
     }
 
     fun deleteImage(imageUri : String){
-        noteWithLabels.note.images.removeIf { it == imageUri }
+        _noteWithLabels.value!!.note.images.removeIf { it == imageUri }
     }
 }
