@@ -290,10 +290,12 @@ class DetailNoteFragment : Fragment() {
             val date = formatter.parse(timeReminderString)
             timeReminder = date.time
 
-            notes.forEach {
-                overviewModel.sendNotification(it, timeReminder)
-                viewModel.addReminder(timeReminder)
-            }
+//            notes.forEach {
+//                overviewModel.sendNotification(it, timeReminder)
+//                viewModel.addReminder(timeReminder)
+//            }
+
+            notifyNoteOfNewReminder(timeReminder,notes)
             alertDialog.hide()
             overviewModel.clearView()
 
@@ -308,13 +310,59 @@ class DetailNoteFragment : Fragment() {
         if(notes.size==1 && notes[0]!!.timeReminder!=0L) {
             dialogViewBinding.deleteAction.visibility = View.VISIBLE
             dialogViewBinding.deleteAction.setOnClickListener {
-                overviewModel.deleteReminder(notes[0])
-                viewModel.deleteReminder()
+                notifyNoteOfNewReminder(timeReminder,notes)
                 alertDialog.hide()
                 overviewModel.clearView()
             }
         }
 
+    }
+
+    private fun notifyNoteOfNewReminder(timeReminder: Long, notes : List<Note>){
+
+        notes.forEach { note ->
+
+            if(timeReminder!=0L)
+                overviewModel.sendNotification(note,timeReminder)
+
+            val notesUpdateReminder =
+                if(note.state == 1)
+                    overviewModel.archiveNotes.value?.find { it.note.noteId == note.noteId }?.note
+                else
+                    overviewModel.normalNotes.value?.find { it.note.noteId == note.noteId }?.note
+
+            runBlocking(Dispatchers.IO){
+                notesUpdateReminder?.timeReminder = timeReminder
+                notesUpdateReminder?.let { repository.update(it) }
+                viewModel.addReminder(timeReminder)
+            }
+//
+//            if(note.state == ARCHIVE){
+//                viewModel.archiveNotes.value?.forEach { archiveNote ->
+//                    if(archiveNote.note.noteId == note.noteId)
+//                        runBlocking {
+//                            withContext(Dispatchers.IO){
+//                                archiveNote.note.timeReminder = timeReminder
+//                                noteRepository.update(archiveNote.note)
+//                            }
+//                        }
+//                }
+//
+//            }else{
+//                viewModel.normalNotes.value?.forEach { normalNote ->
+//                    if(normalNote.note.noteId == note.noteId)
+//                        runBlocking {
+//                            withContext(Dispatchers.IO){
+//                                normalNote.note.timeReminder = timeReminder
+//                                noteRepository.update(normalNote.note)
+//                            }
+//                        }
+//
+//                }
+//
+//            }
+
+        }
     }
 
 

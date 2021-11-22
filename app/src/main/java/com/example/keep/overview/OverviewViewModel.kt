@@ -385,7 +385,7 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
         return mutableListOf(
             DataFilterAdapter("Lists", R.drawable.ic_outline_check_box_24),
             DataFilterAdapter("Images", R.drawable.ic_outline_image_24),
-            DataFilterAdapter("Voice", R.drawable.ic_baseline_mic_none_24)
+//            DataFilterAdapter("Voice", R.drawable.ic_baseline_mic_none_24)
         )
     }
 

@@ -26,10 +26,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.*
-import com.example.keep.database.DataCheckboxes
-import com.example.keep.database.Note
-import com.example.keep.database.NoteDatabase
-import com.example.keep.database.NoteRepository
+import com.example.keep.database.*
 import com.example.keep.databinding.ActivityMainBinding
 import com.example.keep.databinding.DateTimePickerBinding
 import com.example.keep.detail.DetailNoteFragment
@@ -348,12 +345,10 @@ class MainActivity : AppCompatActivity() {
             val formatter = SimpleDateFormat("MM dd yyyy HH:mm")
             val date = formatter.parse(timeReminderString)
             timeReminder = date.time
-            Toast.makeText(this,"current " +
-                    "${SimpleDateFormat("MM dd yyyy HH:mm").format(System.currentTimeMillis())}," +
-                    " time $timeReminderString", Toast.LENGTH_LONG).show()
-            notes.forEach {
-                viewModel.sendNotification(it, timeReminder)
-            }
+//            Toast.makeText(this,"current " +
+//                    "${SimpleDateFormat("MM dd yyyy HH:mm").format(System.currentTimeMillis())}," +
+//                    " time $timeReminderString", Toast.LENGTH_LONG).show()
+            notifyNoteOfNewReminder(timeReminder,notes)
             alertDialog.hide()
             viewModel.clearView()
 
@@ -365,16 +360,67 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        if(notes.size==1 && notes[0].timeReminder!=0L) {
+        dialogViewBinding.deleteAction.setOnClickListener {
+
+//            viewModel.deleteReminder(notes[0])
+            notifyNoteOfNewReminder(0L,notes)
+            alertDialog.hide()
+            viewModel.clearView()
+        }
+
+        if(notes.all { it.timeReminder!=0L }) {
             dialogViewBinding.deleteAction.visibility = View.VISIBLE
-            dialogViewBinding.deleteAction.setOnClickListener {
-                viewModel.deleteReminder(notes[0])
-                alertDialog.hide()
-                viewModel.clearView()
-            }
         }
 
     }
+
+    private fun notifyNoteOfNewReminder(timeReminder: Long, notes : List<Note>){
+
+        notes.forEach { note ->
+
+            if(timeReminder!=0L)
+                viewModel.sendNotification(note,timeReminder)
+
+            val notesUpdateReminder =
+                if(note.state == ARCHIVE)
+                    viewModel.archiveNotes.value?.find { it.note.noteId == note.noteId }?.note
+                else
+                    viewModel.normalNotes.value?.find { it.note.noteId == note.noteId }?.note
+
+            runBlocking(Dispatchers.IO){
+                notesUpdateReminder?.timeReminder = timeReminder
+                notesUpdateReminder?.let { noteRepository.update(it) }
+            }
+//
+//            if(note.state == ARCHIVE){
+//                viewModel.archiveNotes.value?.forEach { archiveNote ->
+//                    if(archiveNote.note.noteId == note.noteId)
+//                        runBlocking {
+//                            withContext(Dispatchers.IO){
+//                                archiveNote.note.timeReminder = timeReminder
+//                                noteRepository.update(archiveNote.note)
+//                            }
+//                        }
+//                }
+//
+//            }else{
+//                viewModel.normalNotes.value?.forEach { normalNote ->
+//                    if(normalNote.note.noteId == note.noteId)
+//                        runBlocking {
+//                            withContext(Dispatchers.IO){
+//                                normalNote.note.timeReminder = timeReminder
+//                                noteRepository.update(normalNote.note)
+//                            }
+//                        }
+//
+//                }
+//
+//            }
+
+            adapter.notifyItemChanged(note.position)
+        }
+    }
+
 
 //    private fun deleteReminder(note: Note){
 //        val notificationManager = NotificationManagerCompat.from(requireContext())

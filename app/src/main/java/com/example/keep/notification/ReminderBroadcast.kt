@@ -24,15 +24,15 @@ class ReminderBroadcast: BroadcastReceiver() {
         title = extras!!.getString("title")!!
         content = extras!!.getString("content")!!
         val timeReminder = extras!!.getLong("timeReminder")
-
-        val repository = NoteRepository(NoteDatabase.getInstance(context!!).noteDao)
-        runBlocking {
-            withContext(Dispatchers.IO){
-                var noteAddReminder = repository.get(notificationId)
-                noteAddReminder.note.timeReminder = timeReminder
-                repository.update(noteAddReminder.note)
-            }
-        }
+//
+//        val repository = NoteRepository(NoteDatabase.getInstance(context!!).noteDao)
+//        runBlocking {
+//            withContext(Dispatchers.IO){
+//                var noteAddReminder = repository.get(notificationId)
+//                noteAddReminder.note.timeReminder = timeReminder
+//                repository.update(noteAddReminder.note)
+//            }
+//        }
         setUpNotification(context!!)
 
     }
