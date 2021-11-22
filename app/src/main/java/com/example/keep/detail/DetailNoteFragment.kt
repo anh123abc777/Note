@@ -205,6 +205,17 @@ class DetailNoteFragment : Fragment() {
 
         viewModel.noteWithLabels.observe(viewLifecycleOwner) {
 
+            binding.run {
+                imageList.adapter = imageAdapter
+
+//            if (noteWithLabels?.note.images!!.isNotEmpty()) {
+                imageAdapter.submitList(noteWithLabels.note.images)
+                imageList.layoutManager = GridLayoutManager(requireContext(), 3).apply {
+                    spanSizeLookup = imageAdapter.variableSpanSizeLookup
+                }
+
+            }
+
             var list = mutableListOf<Label>()
 
             if (it.note.timeReminder != 0L) {
@@ -444,8 +455,8 @@ class DetailNoteFragment : Fragment() {
 
     private fun takePhoto(){
 
-        Toast.makeText(requireContext(),"take photo click",Toast.LENGTH_SHORT).show()
         dispatchTakePictureIntent()
+
     }
 
 
@@ -453,6 +464,7 @@ class DetailNoteFragment : Fragment() {
             success ->
         if (success) {
             viewModel.addImage()
+            imageAdapter.submitList(viewModel.noteWithLabels.value!!.note.images)
             viewModel.dispatchImageUri(null)
         }else {
         }
@@ -501,7 +513,6 @@ class DetailNoteFragment : Fragment() {
 
 
     private fun addImage(){
-        Toast.makeText(requireContext(),"add Image click",Toast.LENGTH_SHORT).show()
         resultLauncher.launch(viewModel.getIntentLibrary())
     }
 
@@ -632,18 +643,6 @@ class DetailNoteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.run {
-
-
-            imageList.adapter = imageAdapter
-
-//            if (noteWithLabels?.note.images!!.isNotEmpty()) {
-            imageAdapter.submitList(noteWithLabels.note.images)
-            imageList.layoutManager = GridLayoutManager(requireContext(), 3).apply {
-                spanSizeLookup = imageAdapter.variableSpanSizeLookup
-            }
-//            }
-        }
 
 //        overviewModel.createNotificationChannel()
     }

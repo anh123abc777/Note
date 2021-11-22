@@ -81,10 +81,10 @@ class DetailNoteViewModel(private val note: NoteWithLabels,val repository: NoteR
     private var imageUri : String? = null
 
     fun addImage(uriImage: String=imageUri!!){
-        noteWithLabels.value!!.note.images.add(uriImage)
+        _noteWithLabels.value!!.note.images.add(uriImage)
         runBlocking {
             withContext(Dispatchers.IO){
-                repository.update(noteWithLabels.value!!.note)
+                repository.update(_noteWithLabels.value!!.note)
             }
         }
     }
