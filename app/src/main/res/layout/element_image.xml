@@ -24,7 +24,6 @@
             isOverview="@{isOverview}"
             android:scaleType="fitXY"
             android:clickable="false"
-            android:background="@color/reply_blue_600"
             android:layout_centerInParent="true"
             />
         <ImageButton

@@ -40,7 +40,6 @@
                 listDataImages="@{noteWithLabels.note.images}"
                 android:elevation="-1dp"
                 android:clipToOutline="false"
-                android:background="@color/reply_blue_800"
                 />
 
             <TextView

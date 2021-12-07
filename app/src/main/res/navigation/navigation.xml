@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation"
+    app:startDestination="@id/detailNoteFragment2">
+
+    <fragment
+        android:id="@+id/detailNoteFragment2"
+        android:name="com.example.keep.detail.DetailNoteFragment"
+        android:label="DetailNoteFragment" >
+        <action
+            android:id="@+id/action_detailNoteFragment2_to_labelFragment2"
+            app:destination="@id/labelFragment2" />
+        <argument
+            android:name="noteId"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/labelFragment2"
+        android:name="com.example.keep.label.LabelFragment"
+        android:label="LabelFragment" >
+        <argument
+            android:name="noteIdsToLabel"
+            app:argType="integer[]" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_homeFragment"
+        app:destination="@+id/detailNoteFragment2"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/navigation"
+        app:popUpToInclusive="true"/>
+</navigation>

@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.keep.R
 import com.example.keep.adapter.LabelSettingAdapter
@@ -45,12 +44,10 @@ class LabelSettingFragment : Fragment() {
                 "delete" -> {
                     adapter.notifyItemRemoved(viewModel.allLabels.value!!.indexOf(label))
                     viewModel.removeLabel(label)
-                    Toast.makeText(context,"delete ${label}  ${viewModel.allLabels.value}",Toast.LENGTH_SHORT).show()
                 }
 
                 "update" -> {
 //                    viewModel.updateLabel(label)
-//                    Toast.makeText(context,"update ${label}",Toast.LENGTH_SHORT).show()
 
                 }
 

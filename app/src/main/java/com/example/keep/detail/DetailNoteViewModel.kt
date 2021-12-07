@@ -29,13 +29,15 @@ class DetailNoteViewModel(private val note: NoteWithLabels,val repository: NoteR
     val stateCheckBoxes : LiveData<Boolean>
         get() = _stateCheckboxes
 
-     val timeEditedString = noteWithLabels.value?.note?.timeEdited?.let { convertLongToDateString(it) }
+     var timeEditedString = _noteWithLabels.value?.note?.timeEdited?.let { convertLongToDateString(it) }
     var navigateToLabel = false
 
 
     init {
         _noteWithLabels.value = note
         _stateCheckboxes.value = noteWithLabels.value!!.note.checkboxes.isNotEmpty()
+        timeEditedString = _noteWithLabels.value?.note?.timeEdited?.let { convertLongToDateString(it) }
+
     }
 
     fun setNoteWithLabelValue(noteWithLabels: NoteWithLabels){

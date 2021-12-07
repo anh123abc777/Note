@@ -265,7 +265,7 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
 //                }
 //            }
             noteDelete.forEach { note ->
-                coroutineScope.launch(Dispatchers.IO) {
+                runBlocking(Dispatchers.IO) {
                     note.state = -1
                     repository.update(note)
                 }
@@ -276,7 +276,7 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
     fun undoDeleteNotes(){
         if (noteDelete!=null){
             noteDelete.forEach { note ->
-                coroutineScope.launch(Dispatchers.IO) {
+                runBlocking(Dispatchers.IO) {
                     note.state = 0
                     repository.update(note)
                 }
@@ -293,7 +293,7 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
 
         if (notesArchive!=null){
             notesArchive.forEach { note ->
-                coroutineScope.launch(Dispatchers.IO){
+               runBlocking(Dispatchers.IO){
                     note.state = 1
                     repository.update(note)
                 }
@@ -330,7 +330,7 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
 
     fun unarchive(){
         _notesSelected.value!!.forEach { it ->
-            coroutineScope.launch(Dispatchers.IO){
+            runBlocking(Dispatchers.IO){
                 it.note.state = 0
                 repository.update(it.note)
             }
@@ -347,7 +347,7 @@ class OverviewViewModel(val activity: Activity, private val application: Applica
 
     fun restore(){
         _notesSelected.value!!.forEach { it ->
-            coroutineScope.launch(Dispatchers.IO){
+            runBlocking(Dispatchers.IO){
                 it.note.state = 0
                 repository.update(it.note)
             }

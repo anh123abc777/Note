@@ -1,5 +1,6 @@
 package com.example.keep.overview
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import androidx.lifecycle.LiveData
@@ -7,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.keep.R
 import com.example.keep.database.NoteRepository
 import com.example.keep.database.NoteWithLabels
 import kotlinx.coroutines.Dispatchers
@@ -122,16 +124,17 @@ data class CustomItemTouchHelper(
     }
 
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun clearView(recyclerView: RecyclerView,
                            viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
         if (notesSelected.value?.isEmpty() == true) {
             viewHolder.itemView.background?.let {
-                (viewHolder.itemView.background as GradientDrawable)
-                    .setStroke(2, Color.parseColor("#bdbdbd"))
+//                (viewHolder.itemView.background as GradientDrawable)
+//                    .setStroke(2, Color.parseColor("#bdbdbd"))
+                viewHolder.itemView.background = viewHolder.itemView.context.getDrawable(R.drawable.border)
                 viewHolder.itemView.tag = "isNotSelect"
             }
-            Timber.i("normalNotes ${noteGroup.value}")
         }
 
     }

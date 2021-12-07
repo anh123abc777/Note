@@ -132,7 +132,8 @@ class MainActivity : AppCompatActivity() {
 //                findNavController().navigate(
 //                    OverviewFragmentDirections
 
-                clearView()
+                viewModel.clearView()
+
                 updateOrderNotes()
 
                 binding.view.visibility = View.VISIBLE
@@ -151,6 +152,8 @@ class MainActivity : AppCompatActivity() {
 
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.START)
                 viewModel.doneNavigating()
+                viewModel.clearSelected()
+
             }
 
         }
@@ -171,6 +174,7 @@ class MainActivity : AppCompatActivity() {
                 binding.view.visibility = View.GONE
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED,Gravity.START)
                 viewModel.clearView()
+                viewModel.clearSelected()
             }
         }
     }
@@ -339,7 +343,7 @@ class MainActivity : AppCompatActivity() {
 
         var timeReminder: Long
         dialogViewBinding.saveAction.setOnClickListener {
-
+            viewModel.clearView()
             val timeReminderString = (mMonth+1).toString() +" "+ mDay.toString() +" "+  mYear.toString()+" " +
                     hour.toString()+ ":" + minute.toString()
             val formatter = SimpleDateFormat("MM dd yyyy HH:mm")
@@ -350,22 +354,26 @@ class MainActivity : AppCompatActivity() {
 //                    " time $timeReminderString", Toast.LENGTH_LONG).show()
             notifyNoteOfNewReminder(timeReminder,notes)
             alertDialog.hide()
-            viewModel.clearView()
+            viewModel.clearSelected()
+
 
         }
 
         dialogViewBinding.cancelAction.setOnClickListener {
-            alertDialog.hide()
             viewModel.clearView()
+            alertDialog.hide()
+            viewModel.clearSelected()
+
 
         }
 
         dialogViewBinding.deleteAction.setOnClickListener {
-
+            viewModel.clearView()
 //            viewModel.deleteReminder(notes[0])
             notifyNoteOfNewReminder(0L,notes)
             alertDialog.hide()
-            viewModel.clearView()
+            viewModel.clearSelected()
+
         }
 
         if(notes.all { it.timeReminder!=0L }) {
@@ -491,7 +499,8 @@ class MainActivity : AppCompatActivity() {
             it.setOnMenuItemClickListener {
 
                 viewModel.clearView()
-
+                viewModel.clearSelected()
+                updateOrderNotes()
                 closeDrawer()
 /**
                 findNavController().navigate(
@@ -545,6 +554,8 @@ class MainActivity : AppCompatActivity() {
 
                             viewModel.startSearching()
 
+                            viewModel.clearSelected()
+
                             true
                         }
                     }
@@ -558,6 +569,8 @@ class MainActivity : AppCompatActivity() {
     private fun setFunctionForMenuItemNavigationBar(){
         binding.navigationView.setNavigationItemSelectedListener { menutItem ->
             viewModel.clearView()
+            viewModel.clearSelected()
+
 
             when (menutItem.itemId) {
                 R.id.notes -> {
@@ -566,7 +579,6 @@ class MainActivity : AppCompatActivity() {
                     viewModel.setMenuItemForNormalNotes()
                     adapter.filterLabel(null,false)
                     viewModel.stopSearching()
-                    Toast.makeText(this, "normalNotes click", Toast.LENGTH_SHORT).show()
                     viewModel.setUpLabelNavigate(null)
                 }
 
@@ -597,7 +609,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> Toast.makeText(
                     this,
-                    "i don't know wtf is this",
+                    "",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -623,6 +635,7 @@ class MainActivity : AppCompatActivity() {
                     .actionOverviewFragmentToSearchFragment())
                 **/
 
+                updateOrderNotes()
                 binding.view.visibility = View.VISIBLE
                 val fragment = SearchFragment()
                 val args = Bundle()
@@ -702,7 +715,9 @@ class MainActivity : AppCompatActivity() {
     private fun setItemCLickContextualActionbar(){
 
         binding.contextualActionBar.setNavigationOnClickListener {
-            clearView()
+            viewModel.clearView()
+            viewModel.clearSelected()
+
         }
 
         setFunctionForMenuItemsContextualActionbar()
@@ -835,11 +850,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var pinned = false
     private fun setFunctionForMenuItemsContextualActionbar(){
         binding.contextualActionBar.setOnMenuItemClickListener {  item ->
             when(item.itemId){
                 R.id.pin -> {
                     addPin()
+                    pinned = true
                 }
                 R.id.label -> {
                     addLabel()
@@ -885,29 +902,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun unarchive(){
-        viewModel.unarchive()
         viewModel.clearView()
+        viewModel.unarchive()
+        viewModel.clearSelected()
+
     }
 
     private fun restore(){
-        viewModel.restore()
         viewModel.clearView()
+        viewModel.restore()
+        viewModel.clearSelected()
+
     }
 
     private fun deleteForever(){
-        viewModel.deleteForever()
         viewModel.clearView()
+        viewModel.deleteForever()
+        viewModel.clearSelected()
     }
 
     private fun storageNotes(){
-        viewModel.storageNotes()
         viewModel.clearView()
+        viewModel.storageNotes()
+        viewModel.clearSelected()
+
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun addPin(){
-        viewModel.addPin()
         viewModel.clearView()
+        viewModel.addPin()
+        viewModel.clearSelected()
 
         if (viewModel.currentNotesInView.value==ARCHIVE){
             adapter.showNotesArchive(viewModel.archiveNotes.value!!)
@@ -927,7 +952,8 @@ class MainActivity : AppCompatActivity() {
                         .map { it.note.noteId}.toIntArray()))
         **/
 
-
+        viewModel.clearView()
+        updateOrderNotes()
         binding.view.visibility = View.VISIBLE
         val fragment = LabelFragment()
         val args = Bundle()
@@ -941,27 +967,39 @@ class MainActivity : AppCompatActivity() {
         binding.drawerLayout.setBackgroundColor(Color.WHITE)
         ft.addToBackStack(null)
         ft.commit()
-        viewModel.clearView()
+        viewModel.clearSelected()
+
     }
 
     private fun deleteNote(){
-        viewModel.deleteNotes()
         viewModel.clearView()
+        viewModel.deleteNotes()
+        viewModel.clearSelected()
+
     }
 
     private fun makeACopyNote(){
-        viewModel.makeACopy()
         viewModel.clearView()
+        viewModel.makeACopy()
+        updateOrderNotes()
+        viewModel.clearSelected()
     }
 
+    private val ITEM_VIEW_TYPE_ITEM = 1
     private fun clearView(){
-        viewModel.clearSelected()
         for(pos in 0 until binding.listItem.adapter!!.itemCount) {
+
             binding.listItem.findViewHolderForAdapterPosition(pos)
                 ?.let {it ->
-                    viewModel.callback.clearView(binding.listItem, it)
+                    if(it.itemViewType == ITEM_VIEW_TYPE_ITEM)
+                    it.itemView.background = it.itemView.context.getDrawable(R.drawable.border)
+                    it.itemView.tag = "isNotSelect"
+//                    Timber.i("${pos}")
+//                    viewModel.callback.clearView(binding.listItem, it)
                 }
         }
+
+
     }
 
     private fun setupOptionView(){
@@ -976,7 +1014,7 @@ class MainActivity : AppCompatActivity() {
                     invalidateSpanAssignments()
                 }
 
-                binding.listItem.setHasFixedSize(false)
+                binding.listItem.setHasFixedSize(true)
                 binding.listItem.layoutManager = layoutManager
 
             }
@@ -992,7 +1030,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         updateOrderNotes()
-        clearView()
+        viewModel.clearView()
+        viewModel.clearSelected()
 //        var array = IntArray(2)
 //        array = (binding.listItem.layoutManager as StaggeredGridLayoutManager).findFirstCompletelyVisibleItemPositions(array)
 
@@ -1009,28 +1048,39 @@ class MainActivity : AppCompatActivity() {
 
 //        if(viewModel.recyclerViewState!=null) {
 //            binding.listItem.layoutManager!!.onRestoreInstanceState(viewModel.recyclerViewState)
-//            Toast.makeText(this,"restore ${viewModel.recyclerViewState}", Toast.LENGTH_SHORT).show()
 //        }
 
 
 
     private fun updateOrderNotes(){
-        viewModel.normalNotes.value!!.forEachIndexed { index, noteWithLabels ->
-            runBlocking {
-                withContext(Dispatchers.IO){
-                    noteWithLabels.note.position = index
-                    noteRepository.update(noteWithLabels.note)
+
+        when(viewModel.currentNotesInView.value) {
+
+             ARCHIVE ->
+                 viewModel.archiveNotes.value!!.forEachIndexed { index, noteWithLabels ->
+                    runBlocking {
+                        withContext(Dispatchers.IO) {
+                            if (noteWithLabels.note.position != index || pinned) {
+                                noteWithLabels.note.position = index
+                                noteRepository.update(noteWithLabels.note)
+                            }
+                        }
+                    }
+                }
+
+            else -> viewModel.normalNotes.value!!.forEachIndexed { index, noteWithLabels ->
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        if (noteWithLabels.note.position != index || pinned) {
+                            noteWithLabels.note.position = index
+                            noteRepository.update(noteWithLabels.note)
+                        }
+                    }
                 }
             }
         }
 
-        viewModel.archiveNotes.value!!.forEach { noteWithLabels ->
-            runBlocking {
-                withContext(Dispatchers.IO){
-                    noteRepository.update(noteWithLabels.note)
-                }
-            }
-        }
+        pinned = false
     }
 
     //    private fun updateOrderNotes(){

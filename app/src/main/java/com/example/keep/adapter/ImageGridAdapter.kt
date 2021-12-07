@@ -23,12 +23,15 @@ class ImageGridAdapter(canEdit: Boolean, clickListener: OnClickListener) :
             var rowSpansOccupied = 0
 
             if(count==1){
-                list.add(3)
+                list.add(4)
             }else {
                 repeat(count) {
-                    val size = Random.nextInt(1, 3 + 1 - rowSpansOccupied)
+                    var size = 0
+                    do {
+                         size = Random.nextInt(2, 4 +1 - rowSpansOccupied)
+                    }while (size==3)
                     rowSpansOccupied += size
-                    if (rowSpansOccupied >= 3) rowSpansOccupied = 0
+                    if (rowSpansOccupied >= 4) rowSpansOccupied = 0
                     list.add(size)
                 }
             }

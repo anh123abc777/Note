@@ -9,7 +9,6 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
@@ -210,7 +209,7 @@ class DetailNoteFragment : Fragment() {
 
 //            if (noteWithLabels?.note.images!!.isNotEmpty()) {
                 imageAdapter.submitList(noteWithLabels.note.images)
-                imageList.layoutManager = GridLayoutManager(requireContext(), 3).apply {
+                imageList.layoutManager = GridLayoutManager(requireContext(), 4).apply {
                     spanSizeLookup = imageAdapter.variableSpanSizeLookup
                 }
 
@@ -232,7 +231,6 @@ class DetailNoteFragment : Fragment() {
 
             if (list.isNotEmpty()) {
                 labelAdapter.submitList(list)
-                Toast.makeText(context,"labels ${list}",Toast.LENGTH_SHORT).show()
                 binding.labels.visibility = View.VISIBLE
             } else
                 binding.labels.visibility = View.GONE
@@ -517,12 +515,10 @@ class DetailNoteFragment : Fragment() {
     }
 
     private fun addRecording(){
-        Toast.makeText(requireContext(),"addRecording click",Toast.LENGTH_SHORT).show()
 
     }
 
     private fun addCheckboxes(){
-        Toast.makeText(requireContext(),"checkboxes click",Toast.LENGTH_SHORT).show()
         viewModel.addCheckboxes()
     }
 

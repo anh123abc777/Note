@@ -1,5 +1,6 @@
 package com.example.keep.adapter
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -27,11 +28,12 @@ class FilterAdapter(private val clickListener: OnClickListener, val type: TypeFi
     class ViewHolder
         private constructor(private val binding: ItemFilterBinding) : RecyclerView.ViewHolder(binding.root) {
 
+        @SuppressLint("ResourceAsColor")
         fun bind(item: DataFilterAdapter, clickListener: OnClickListener, type: TypeFilter) {
             binding.item = item
             when(type){
-                TypeFilter.TYPE -> binding.frameItemFilter.setBackgroundColor(Color.BLUE)
-                TypeFilter.LABEL -> binding.frameItemFilter.setBackgroundResource(R.color.grayColor)
+                TypeFilter.TYPE -> binding.frameItemFilter.setBackgroundResource(R.color.reply_orange_400)
+                TypeFilter.LABEL -> binding.frameItemFilter.setBackgroundResource(R.color.reply_blue_200)
             }
 
             binding.root.setOnClickListener {

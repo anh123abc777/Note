@@ -17,7 +17,7 @@
             android:id="@+id/image_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_label_24"
+            android:src="@drawable/ic_outline_label_24"
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
             />

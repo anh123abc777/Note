@@ -12,6 +12,7 @@ import androidx.core.view.allViews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.*
+import com.example.keep.R
 import com.example.keep.checkbox.CheckboxGroupAdapter
 import com.example.keep.database.*
 import com.example.keep.databinding.ElementNoteBinding
@@ -161,17 +162,19 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
 
             private fun onChangeState(){
                 if(binding.frameNote.tag=="isNotSelect"){
-                    val drawable = itemView.background as GradientDrawable
-                    drawable.setStroke(3,Color.BLACK)
+                   itemView.background = itemView.context.getDrawable(R.drawable.border_selected)
+//                    val drawable = itemView.background as GradientDrawable
+//                    drawable.setStroke(3,Color.BLACK)
 //                    (itemView.background as GradientDrawable).setStroke(3,Color.BLUE)
                     itemView.tag = "isSelected"
 
                 } else
                 if(binding.frameNote.tag=="isSelected") {
-                    (itemView.background as GradientDrawable).setStroke(
-                        2,
-                        Color.parseColor("#bdbdbd")
-                    )
+                    itemView.background = itemView.context.getDrawable(R.drawable.border)
+//                    (itemView.background as GradientDrawable).setStroke(
+//                        2,
+//                        Color.parseColor("#bdbdbd")
+//                    )
                     itemView.tag = "isNotSelect"
                 }
             }
@@ -367,9 +370,8 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
                 }
             }
 
-            else -> Toast.makeText(application,"wtf is this $text",Toast.LENGTH_SHORT).show()
+            else -> Toast.makeText(application,"",Toast.LENGTH_SHORT).show()
         }
-        Toast.makeText(application,"$text",Toast.LENGTH_SHORT).show()
 
 
         _allNotes.value = items
@@ -428,6 +430,7 @@ class NotesAdapter(private val clickListener : OnClickListener, private val appl
             }
         }
     }
+
 
 
 
